@@ -71,16 +71,15 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
   .tab-content.hidden{display:block!important}
 }
 
-/* Desktop: show links inline, hide hamburger */
+/* Desktop: one centered row */
 @media(min-width:769px){
-  .nav-inner{display:flex;align-items:center;justify-content:center;padding:15px}
-  .hamburger{display:none}
+  nav{display:flex;align-items:center;justify-content:center;padding:14px 20px;flex-wrap:wrap;gap:0}
+  .nav-inner{display:none}  /* hide hamburger row entirely */
   .nav-links{display:flex!important;flex-direction:row;align-items:center;
-    background:none;padding:0;gap:0}
+    background:none;padding:0;gap:0;flex-wrap:wrap;justify-content:center}
   .nav-links a{border-bottom:none;padding:0;margin:0 15px;font-weight:bold;
-    color:white;text-decoration:none}
-  .nav-links .nav-brochure-btn{display:none}  /* shown in nav-inner on desktop */
-  .nav-inner .nav-brochure-btn{display:inline-block}
+    color:white;text-decoration:none;font-size:1rem}
+  .nav-links .nav-brochure-btn{display:inline-block;margin-left:18px}
 }
 
 /* ── Mobile responsive ───────────────────────────────────── */
@@ -160,7 +159,7 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
   <a href="#learning" onclick="closeNav()">Learning Hub</a>
   <a href="#tools" onclick="closeNav()">Tools</a>
   <a href="#contact" onclick="closeNav()">Contact</a>
-  <button class="nav-brochure-btn" onclick="downloadBrochure()">
+  <button class="nav-brochure-btn" onclick="downloadBrochure()" style="margin-left:18px">
     <i class="fas fa-file-pdf"></i> Brochure
   </button>
 </div>
