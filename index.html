@@ -70,6 +70,69 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
   section{page-break-inside:avoid}
   .tab-content.hidden{display:block!important}
 }
+
+/* Desktop: show links inline, hide hamburger */
+@media(min-width:769px){
+  .nav-inner{display:flex;align-items:center;justify-content:center;padding:15px}
+  .hamburger{display:none}
+  .nav-links{display:flex!important;flex-direction:row;align-items:center;
+    background:none;padding:0;gap:0}
+  .nav-links a{border-bottom:none;padding:0;margin:0 15px;font-weight:bold;
+    color:white;text-decoration:none}
+  .nav-links .nav-brochure-btn{display:none}  /* shown in nav-inner on desktop */
+  .nav-inner .nav-brochure-btn{display:inline-block}
+}
+
+/* ── Mobile responsive ───────────────────────────────────── */
+@media(max-width:768px){
+  header{padding:50px 16px 40px}
+  header h1{font-size:2rem}
+  header h3{font-size:1rem}
+  header p{font-size:.85rem;line-height:1.7}
+
+  /* Hamburger nav */
+  nav{padding:0;position:sticky;top:0;z-index:999}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;
+    padding:12px 16px}
+  .nav-links{display:none;flex-direction:column;background:#111827;
+    padding:10px 16px 16px;gap:6px}
+  .nav-links.open{display:flex}
+  .nav-links a{display:block;padding:8px 0;font-size:1rem;border-bottom:1px solid #374151}
+  .nav-links .nav-brochure-btn{margin:10px 0 0;width:100%;text-align:center}
+  .hamburger{background:none;border:none;cursor:pointer;
+    display:flex;flex-direction:column;gap:5px;padding:4px}
+  .hamburger span{display:block;width:24px;height:2px;background:white;border-radius:2px}
+
+  section{padding:36px 5%}
+  h2{font-size:1.3rem}
+
+  .stats{grid-template-columns:1fr 1fr;gap:12px}
+  .stat{padding:16px 10px}
+  .stat h3{font-size:1.5rem}
+
+  /* Service cards: full width on mobile */
+  .card{flex:0 1 100%;min-width:unset;max-width:100%}
+  .card img{height:180px}
+
+  .gallery{grid-template-columns:1fr 1fr;gap:10px}
+  .gallery img{height:150px}
+
+  .video-grid{grid-template-columns:1fr}
+  .video-grid video,.video-grid iframe{height:220px}
+
+  .resources ul,.tools ul{columns:1}
+
+  .tab-nav{gap:6px}
+  .tab-btn{padding:8px 14px;font-size:.82rem}
+
+  footer{padding:20px 16px;font-size:.85rem}
+}
+
+@media(max-width:400px){
+  header h1{font-size:1.6rem}
+  .stats{grid-template-columns:1fr}
+  .gallery{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
@@ -82,13 +145,25 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
 </header>
 
 <nav>
-<a href="#analytics">Impact</a>
-<a href="#services">Services</a>
-<a href="#gallery">Gallery</a>
-<a href="#learning">Learning Hub</a>
-<a href="#tools">Tools</a>
-<a href="#contact">Contact</a>
-<button class="nav-brochure-btn" onclick="downloadBrochure()"><i class="fas fa-file-pdf"></i> Brochure</button>
+<div class="nav-inner">
+  <button class="hamburger" onclick="toggleNav()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <button class="nav-brochure-btn" onclick="downloadBrochure()" style="margin-left:auto">
+    <i class="fas fa-file-pdf"></i> Brochure
+  </button>
+</div>
+<div class="nav-links" id="nav-links">
+  <a href="#analytics" onclick="closeNav()">Impact</a>
+  <a href="#services" onclick="closeNav()">Services</a>
+  <a href="#gallery" onclick="closeNav()">Gallery</a>
+  <a href="#learning" onclick="closeNav()">Learning Hub</a>
+  <a href="#tools" onclick="closeNav()">Tools</a>
+  <a href="#contact" onclick="closeNav()">Contact</a>
+  <button class="nav-brochure-btn" onclick="downloadBrochure()">
+    <i class="fas fa-file-pdf"></i> Brochure
+  </button>
+</div>
 </nav>
 
 <section id="analytics">
@@ -319,6 +394,14 @@ function downloadBrochure() {
       delete el.dataset.wasHidden;
     });
   });
+}
+
+/* ── Hamburger toggle ──────────────────────────────────────── */
+function toggleNav(){
+  document.getElementById('nav-links').classList.toggle('open');
+}
+function closeNav(){
+  document.getElementById('nav-links').classList.remove('open');
 }
 </script>
 
