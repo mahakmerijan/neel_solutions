@@ -1,0 +1,326 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEEL Solutions</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Segoe UI,Arial,sans-serif;background:#f5f8fb;color:#222}
+header{
+background:linear-gradient(135deg,#0f766e,#2563eb,#7c3aed);
+color:white;padding:90px 20px;text-align:center}
+header h1{font-size:3rem}
+header p{font-size:1.2rem;margin-top:10px}
+nav{background:#111827;padding:15px;text-align:center;position:sticky;top:0}
+nav a{color:white;text-decoration:none;margin:0 15px;font-weight:bold}
+section{padding:60px 8%}
+h2{text-align:center;margin-bottom:25px;color:#1e3a8a}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+.stat{background:white;border-radius:15px;padding:25px;text-align:center;
+box-shadow:0 4px 15px rgba(0,0,0,.1)}
+.stat h3{font-size:2rem;color:#2563eb}
+
+.services{display:flex;flex-wrap:wrap;justify-content:center;gap:25px}
+.card{background:white;border-radius:15px;overflow:hidden;
+box-shadow:0 5px 18px rgba(0,0,0,.1);
+flex:0 1 calc(33.333% - 20px);min-width:270px;max-width:380px}
+.card img{width:100%;height:220px;object-fit:cover}
+.card h3{padding:15px;color:#0f766e}
+.card p{padding:0 15px 20px}
+
+.gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px}
+.gallery img{width:100%;height:220px;object-fit:cover;border-radius:12px}
+
+.resources,.tools{background:white;border-radius:15px;padding:30px;
+box-shadow:0 5px 18px rgba(0,0,0,.08)}
+.resources ul,.tools ul{columns:2;padding-left:20px}
+
+footer{background:#111827;color:white;text-align:center;padding:30px}
+.hero-btn{background:#f59e0b;color:white;padding:12px 25px;
+border-radius:25px;text-decoration:none;display:inline-block;margin-top:20px}
+
+/* ── Tab system ─────────────────────────────────────────── */
+.tab-nav{display:flex;gap:10px;margin-bottom:28px;justify-content:center;flex-wrap:wrap}
+.tab-btn{background:#e8f0fe;color:#1e3a8a;border:none;padding:10px 24px;
+border-radius:25px;cursor:pointer;font-weight:bold;font-size:.95rem;transition:all .2s}
+.tab-btn.active,.tab-btn:hover{background:#2563eb;color:white}
+.tab-content.hidden{display:none}
+.tab-content .stat h3{font-size:1.15rem;color:#0f766e}
+
+/* ── Brochure button in nav ──────────────────────────────── */
+.nav-brochure-btn{background:#f59e0b;color:white;border:none;padding:8px 20px;
+border-radius:20px;cursor:pointer;font-weight:bold;font-size:.88rem;
+margin-left:18px;vertical-align:middle;transition:background .2s}
+.nav-brochure-btn:hover{background:#d97706}
+
+/* ── Two-video grid ──────────────────────────────────────── */
+.video-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+gap:25px;max-width:1200px;margin:0 auto}
+.video-grid iframe{width:100%;height:360px;border-radius:12px;border:none;
+box-shadow:0 5px 18px rgba(0,0,0,.12)}
+
+/* ── Print / PDF (hides homepage header & nav) ───────────── */
+@media print{
+  header,nav,.nav-brochure-btn,.hero-btn{display:none!important}
+  body{background:white}
+  section{page-break-inside:avoid}
+  .tab-content.hidden{display:block!important}
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>NEEL Solutions</h1>
+<h3>Nurture Ecology, Economy and Livelihoods</h3>
+<p>Enterprise Development • Project Management • Training & Consulting • Digital and Analytical Product Services • Action Research</p>
+<a href="#services" class="hero-btn">Explore Our Services</a>
+</header>
+
+<nav>
+<a href="#analytics">Impact</a>
+<a href="#services">Services</a>
+<a href="#gallery">Gallery</a>
+<a href="#learning">Learning Hub</a>
+<a href="#tools">Tools</a>
+<a href="#contact">Contact</a>
+<button class="nav-brochure-btn" onclick="downloadBrochure()"><i class="fas fa-file-pdf"></i> Brochure</button>
+</nav>
+
+<section id="analytics">
+<h2>Impact Analytics Dashboard</h2>
+
+<div class="tab-nav" id="impact-tabs">
+  <button class="tab-btn active" onclick="showTab('impact','overview',this)">Overview</button>
+  <button class="tab-btn" onclick="showTab('impact','clients',this)">Clients</button>
+  <button class="tab-btn" onclick="showTab('impact','collaborations',this)">Collaborations</button>
+</div>
+
+<div class="tab-content" data-group="impact" id="impact-overview">
+  <div class="stats">
+    <div class="stat"><h3>500+</h3><p>Enterprises Supported</p></div>
+    <div class="stat"><h3>50+</h3><p>Projects Managed</p></div>
+    <div class="stat"><h3>10,000+</h3><p>Trainees Reached</p></div>
+    <div class="stat"><h3>100+</h3><p>Research Studies</p></div>
+  </div>
+</div>
+
+<div class="tab-content hidden" data-group="impact" id="impact-clients">
+  <div class="stats">
+    <div class="stat"><h3>Government Bodies</h3><p>State &amp; Central Departments</p></div>
+    <div class="stat"><h3>NGOs &amp; CSOs</h3><p>Grassroots Organisations</p></div>
+    <div class="stat"><h3>Corporates</h3><p>CSR &amp; Private Sector Partners</p></div>
+    <div class="stat"><h3>Development Agencies</h3><p>International &amp; Bilateral Programmes</p></div>
+  </div>
+</div>
+
+<div class="tab-content hidden" data-group="impact" id="impact-collaborations">
+  <div class="stats">
+    <div class="stat"><h3>Academic Institutions</h3><p>Research &amp; Training Tie-ups</p></div>
+    <div class="stat"><h3>Financial Institutions</h3><p>Credit Linkage Partnerships</p></div>
+    <div class="stat"><h3>Technology Partners</h3><p>Digital Solution Providers</p></div>
+    <div class="stat"><h3>Policy Networks</h3><p>Advocacy &amp; Knowledge Coalitions</p></div>
+  </div>
+</div>
+
+</section>
+
+<section id="services">
+<h2>Our Service Portfolio</h2>
+<div class="services">
+
+<div class="card">
+<img src="Gemini_Generated_Image_9rnd7e9rnd7e9rnd.png" alt="Enterprise Development">
+<h3>Enterprise Development</h3>
+<p>Business incubation, cluster development, value chains, FPOs, SHGs and growth enterprise support.</p>
+</div>
+
+<div class="card">
+<img src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200" alt="Project">
+<h3>Project Management</h3>
+<p>Project design, implementation, monitoring, evaluation, MIS and impact assessment.</p>
+</div>
+
+<div class="card">
+<img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200" alt="Training">
+<h3>Training & Consulting</h3>
+<p>Capacity building, entrepreneurship development, leadership and institutional strengthening.</p>
+</div>
+
+<div class="card">
+<img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200" alt="Digital Products">
+<h3>Digital and Analytical Product Services</h3>
+<p>Web portals, mobile apps, AI solutions, dashboards, analytics and automation systems.</p>
+</div>
+
+<div class="card">
+<img src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200" alt="Research">
+<h3>Action Research</h3>
+<p>Baseline studies, market research, enterprise diagnostics and policy analysis.</p>
+</div>
+
+</div>
+</section>
+
+<section id="gallery">
+<h2>Project Gallery</h2>
+<div class="gallery">
+<img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=1200">
+<img src="https://images.unsplash.com/photo-1523741543316-beb7fc7023d8?w=1200">
+<img src="https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=1200">
+<img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200">
+</div>
+</section>
+
+<section id="video-gallery">
+<h2>Video Learning Gallery</h2>
+<div class="video-grid">
+  <video controls style="width:100%;height:360px;border-radius:12px;background:#000;box-shadow:0 5px 18px rgba(0,0,0,.12)">
+    <source src="VID-20260531-WA0001.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  <video controls style="width:100%;height:360px;border-radius:12px;background:#000;box-shadow:0 5px 18px rgba(0,0,0,.12)">
+    <source src="VID-20260601-WA0000.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+</div>
+</section>
+
+<section id="learning">
+<h2>Learning Reference Library</h2>
+<div class="resources">
+<ul>
+<li>Enterprise Development Manuals</li>
+<li>Business Plan Templates</li>
+<li>OSF & SHG Enterprise Resources</li>
+<li>Project Management Frameworks</li>
+<li>Market Assessment Guides</li>
+<li>Case Studies & Success Stories</li>
+<li>Monitoring & Evaluation Toolkit</li>
+<li>Research Publications</li>
+</ul>
+</div>
+</section>
+
+<section id="tools">
+<h2>Digital Tools & Knowledge Systems</h2>
+<div class="tools">
+<ul>
+<li>Business Model Canvas Generator</li>
+<li>Financial Projection Tool</li>
+<li>Enterprise Diagnostic System</li>
+<li>Market Intelligence Dashboard</li>
+<li>Livelihood Planning Tool</li>
+<li>AI Knowledge Assistant</li>
+<li>Training LMS Portal</li>
+<li>Impact Tracking Dashboard</li>
+</ul>
+</div>
+</section>
+
+<section id="contact">
+<h2>Contact NEEL Solutions</h2>
+
+<div class="tab-nav" id="contact-tabs">
+  <button class="tab-btn active" onclick="showTab('contact','info',this)">Contact Info</button>
+  <button class="tab-btn" onclick="showTab('contact','team',this)">Team</button>
+  <button class="tab-btn" onclick="showTab('contact','partners',this)">Partners</button>
+  <button class="tab-btn" onclick="showTab('contact','advisors',this)">Advisors</button>
+</div>
+
+<div class="tab-content" data-group="contact" id="contact-info">
+  <p style="text-align:center;font-size:1.05rem;line-height:2">
+    <strong>NEEL – Nurture Ecology, Economy and Livelihoods</strong><br>
+    Email: info@neelsolutions.org<br>
+    Website: www.neelsolutions.org
+  </p>
+</div>
+
+<div class="tab-content hidden" data-group="contact" id="contact-team">
+  <div class="stats">
+    <div class="stat"><h3>Leadership</h3><p>Founders &amp; Directors</p></div>
+    <div class="stat"><h3>Programme Team</h3><p>Project Managers &amp; Specialists</p></div>
+    <div class="stat"><h3>Technical Team</h3><p>Research &amp; Digital Experts</p></div>
+    <div class="stat"><h3>Field Team</h3><p>On-ground Implementation</p></div>
+  </div>
+</div>
+
+<div class="tab-content hidden" data-group="contact" id="contact-partners">
+  <div class="stats">
+    <div class="stat"><h3>Implementation Partners</h3><p>Field Execution Organisations</p></div>
+    <div class="stat"><h3>Knowledge Partners</h3><p>Research &amp; Academic Institutions</p></div>
+    <div class="stat"><h3>Technology Partners</h3><p>Digital &amp; Data Solution Providers</p></div>
+    <div class="stat"><h3>Funding Partners</h3><p>Donors &amp; Grant Agencies</p></div>
+  </div>
+</div>
+
+<div class="tab-content hidden" data-group="contact" id="contact-advisors">
+  <div class="stats">
+    <div class="stat"><h3>Domain Experts</h3><p>Livelihoods &amp; Enterprise Specialists</p></div>
+    <div class="stat"><h3>Policy Advisors</h3><p>Development &amp; Governance Experts</p></div>
+    <div class="stat"><h3>Technical Advisors</h3><p>Research &amp; Analytics Mentors</p></div>
+    <div class="stat"><h3>Strategic Advisors</h3><p>Organisational Growth Guidance</p></div>
+  </div>
+</div>
+
+</section>
+
+<footer>
+© 2026 NEEL Solutions | Sustainable Livelihoods • Innovation • Technology • Research
+</footer>
+
+<!-- html2pdf for brochure download -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+/* ── Tab switching ─────────────────────────────────────── */
+function showTab(group, name, btn) {
+  document.querySelectorAll('.tab-content[data-group="' + group + '"]').forEach(function(el) {
+    el.classList.add('hidden');
+  });
+  document.querySelectorAll('#' + group + '-tabs .tab-btn').forEach(function(b) {
+    b.classList.remove('active');
+  });
+  document.getElementById(group + '-' + name).classList.remove('hidden');
+  btn.classList.add('active');
+}
+
+/* ── Brochure PDF download (all sections except header) ── */
+function downloadBrochure() {
+  // Temporarily reveal hidden tab panels so they appear in the PDF
+  document.querySelectorAll('.tab-content.hidden').forEach(function(el) {
+    el.classList.remove('hidden');
+    el.dataset.wasHidden = '1';
+  });
+
+  // Clone every <section> into a wrapper div
+  var wrapper = document.createElement('div');
+  wrapper.style.fontFamily = 'Segoe UI, Arial, sans-serif';
+  wrapper.style.padding = '10px';
+  document.querySelectorAll('section').forEach(function(sec) {
+    wrapper.appendChild(sec.cloneNode(true));
+  });
+
+  var opt = {
+    margin:       [10, 10, 10, 10],
+    filename:     'NEEL-Solutions-Brochure.pdf',
+    image:        { type: 'jpeg', quality: 0.95 },
+    html2canvas:  { scale: 1.5, useCORS: true, allowTaint: true },
+    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+  };
+
+  html2pdf().set(opt).from(wrapper).save().then(function() {
+    // Restore panels that were hidden
+    document.querySelectorAll('.tab-content[data-was-hidden]').forEach(function(el) {
+      el.classList.add('hidden');
+      delete el.dataset.wasHidden;
+    });
+  });
+}
+</script>
+
+</body>
+</html>
