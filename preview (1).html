@@ -75,7 +75,7 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
 @media(min-width:769px){
   nav{display:flex;align-items:center;justify-content:center;padding:14px 20px;flex-wrap:wrap;gap:0}
   .nav-inner{display:none}  /* hide hamburger row entirely */
-  .nav-links{display:flex!important;flex-direction:row;align-items:center;
+  .nav-links{display:flex;flex-direction:row;align-items:center;
     background:none;padding:0;gap:0;flex-wrap:wrap;justify-content:center}
   .nav-links a{border-bottom:none;padding:0;margin:0 15px;font-weight:bold;
     color:white;text-decoration:none;font-size:1rem}
@@ -90,17 +90,24 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
   header p{font-size:.85rem;line-height:1.7}
 
   /* Hamburger nav */
-  nav{padding:0;position:sticky;top:0;z-index:999}
+  nav{padding:0;position:sticky;top:0;z-index:999;display:block}
   .nav-inner{display:flex;align-items:center;justify-content:space-between;
-    padding:12px 16px}
-  .nav-links{display:none;flex-direction:column;background:#111827;
-    padding:10px 16px 16px;gap:6px}
+    padding:13px 18px;border-bottom:1px solid #1f2937}
+  .nav-logo-text{color:white;font-weight:bold;font-size:1rem;letter-spacing:.5px}
+  .nav-links{display:none;flex-direction:column;background:#1a2332;
+    padding:8px 0 16px;gap:0;border-top:1px solid #374151}
   .nav-links.open{display:flex}
-  .nav-links a{display:block;padding:8px 0;font-size:1rem;border-bottom:1px solid #374151}
-  .nav-links .nav-brochure-btn{margin:10px 0 0;width:100%;text-align:center}
+  .nav-links a{display:block;padding:13px 22px;font-size:.97rem;
+    border-bottom:1px solid #2d3748;color:white;text-decoration:none;
+    font-weight:500;transition:background .15s}
+  .nav-links a:last-of-type{border-bottom:none}
+  .nav-links a:active{background:#2563eb}
+  .nav-links .nav-brochure-btn{margin:14px 22px 0;width:calc(100% - 44px);
+    text-align:center;padding:10px;border-radius:8px}
   .hamburger{background:none;border:none;cursor:pointer;
-    display:flex;flex-direction:column;gap:5px;padding:4px}
-  .hamburger span{display:block;width:24px;height:2px;background:white;border-radius:2px}
+    display:flex;flex-direction:column;gap:5px;padding:6px}
+  .hamburger span{display:block;width:26px;height:2px;background:white;
+    border-radius:2px;transition:all .2s}
 
   section{padding:36px 5%}
   h2{font-size:1.3rem}
@@ -148,7 +155,8 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
   <button class="hamburger" onclick="toggleNav()" aria-label="Menu">
     <span></span><span></span><span></span>
   </button>
-  <button class="nav-brochure-btn" onclick="downloadBrochure()" style="margin-left:auto">
+  <span class="nav-logo-text">NEEL Solutions</span>
+  <button class="nav-brochure-btn" onclick="downloadBrochure()">
     <i class="fas fa-file-pdf"></i> Brochure
   </button>
 </div>
