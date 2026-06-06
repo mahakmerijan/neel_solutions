@@ -87,7 +87,7 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
 
 /* Desktop: one centered row */
 @media(min-width:769px){
-  nav{display:flex;align-items:center;justify-content:center;padding:14px 20px;flex-wrap:wrap;gap:0}
+  nav{display:flex;align-items:center;justify-content:center;padding:14px 20px;flex-wrap:wrap;gap:0;position:relative}
   .nav-inner{display:none}  /* hide hamburger row entirely */
   .nav-links{display:flex;flex-direction:row;align-items:center;
     background:none;padding:0;gap:0;flex-wrap:wrap;justify-content:center}
@@ -153,7 +153,44 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
   .stats{grid-template-columns:1fr}
   .gallery{grid-template-columns:1fr}
 }
-</style>
+
+/* ── Auth modal & nav buttons ──────────────────────── */
+.auth-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,.6);z-index:10000;align-items:center;justify-content:center}
+.auth-overlay.open{display:flex}
+.auth-box{background:white;border-radius:16px;padding:36px 32px;width:90%;max-width:420px;
+  box-shadow:0 20px 60px rgba(0,0,0,.35);position:relative;max-height:90vh;overflow-y:auto}
+.auth-close{position:absolute;top:12px;right:16px;background:none;border:none;
+  font-size:1.6rem;cursor:pointer;color:#9ca3af;line-height:1}
+.auth-close:hover{color:#111}
+.auth-title{color:#1e3a8a;margin-bottom:18px;font-size:1.25rem;text-align:center}
+.auth-hint{text-align:center;font-size:.88rem;color:#6b7280;margin-bottom:16px}
+.auth-field{width:100%;padding:11px 14px;border:1px solid #d1d5db;border-radius:8px;
+  font-size:.96rem;margin-bottom:12px;box-sizing:border-box;transition:border-color .2s}
+.auth-field:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.auth-submit{width:100%;padding:12px;background:#2563eb;color:white;border:none;
+  border-radius:8px;font-size:1rem;font-weight:bold;cursor:pointer;margin-top:4px;transition:background .2s}
+.auth-submit:hover{background:#1d4ed8}
+.auth-msg{text-align:center;font-size:.88rem;margin-top:10px;min-height:18px}
+.auth-msg.error{color:#dc2626}
+.auth-msg.success{color:#059669}
+.auth-links{text-align:center;margin-top:14px;font-size:.88rem;display:flex;
+  gap:8px;justify-content:center;flex-wrap:wrap;align-items:center}
+.auth-link{background:none;border:none;color:#2563eb;cursor:pointer;
+  font-size:.88rem;text-decoration:underline;padding:0}
+.nav-auth{position:absolute;right:20px;top:50%;transform:translateY(-50%);
+  display:flex;align-items:center;gap:8px}
+.auth-nav-btn{padding:7px 16px;border-radius:20px;border:2px solid transparent;
+  cursor:pointer;font-weight:bold;font-size:.82rem;transition:all .2s;white-space:nowrap}
+.register-btn{background:transparent;border-color:rgba(255,255,255,.7);color:white}
+.register-btn:hover{background:white;color:#111827;border-color:white}
+.login-btn{background:#f59e0b;color:white;border-color:#f59e0b}
+.login-btn:hover{background:#d97706;border-color:#d97706}
+.logout-btn{background:#ef4444;color:white;border-color:#ef4444}
+.logout-btn:hover{background:#dc2626;border-color:#dc2626}
+.nav-user-email{color:rgba(255,255,255,.85);font-size:.8rem;max-width:130px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:768px){.nav-auth{display:none!important}}
 </head>
 <body>
 
@@ -165,6 +202,17 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
 </header>
 
 <nav>
+<!-- Desktop auth buttons (top right) -->
+<div class="nav-auth">
+  <div id="nav-auth-btns" style="display:flex;gap:8px;align-items:center">
+    <button class="auth-nav-btn register-btn" onclick="openAuthModal('panel-register')">Register</button>
+    <button class="auth-nav-btn login-btn" onclick="openAuthModal('panel-login')">Login</button>
+  </div>
+  <div id="nav-user-info" style="display:none;align-items:center;gap:8px">
+    <span id="nav-user-email" class="nav-user-email"></span>
+    <button class="auth-nav-btn logout-btn" onclick="doLogout()">Logout</button>
+  </div>
+</div>
 <div class="nav-inner">
   <button class="hamburger" onclick="toggleNav()" aria-label="Menu">
     <span></span><span></span><span></span>
@@ -183,6 +231,15 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
   <button class="nav-brochure-btn" onclick="downloadBrochure()" style="margin-left:18px">
     <i class="fas fa-file-pdf"></i> Brochure
   </button>
+  <!-- Mobile auth buttons -->
+  <div id="mobile-auth-btns" style="display:flex;gap:10px;padding:12px 22px;border-top:1px solid #374151;margin-top:8px">
+    <button class="auth-nav-btn register-btn" style="flex:1" onclick="openAuthModal('panel-register');closeNav()">Register</button>
+    <button class="auth-nav-btn login-btn" style="flex:1" onclick="openAuthModal('panel-login');closeNav()">Login</button>
+  </div>
+  <div id="mobile-user-info" style="display:none;padding:12px 22px;border-top:1px solid #374151;margin-top:8px">
+    <span id="mobile-user-email" style="color:rgba(255,255,255,.85);font-size:.85rem;display:block;margin-bottom:8px;text-align:center"></span>
+    <button class="auth-nav-btn logout-btn" style="width:100%" onclick="doLogout()">Logout</button>
+  </div>
 </div>
 </nav>
 
@@ -191,7 +248,7 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
 
 <div class="tab-nav" id="impact-tabs">
   <button class="tab-btn active" onclick="showTab('impact','overview',this)">Overview</button>
-  <button class="tab-btn" onclick="showTab('impact','clientscollabs',this)">Clients &amp; Collaborations</button>
+  <button class="tab-btn" id="tab-clients-collabs" onclick="showTab('impact','clientscollabs',this)">Clients &amp; Collaborations</button>
 </div>
 
 <div class="tab-content" data-group="impact" id="impact-overview">
@@ -310,7 +367,7 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
 </p>
 
 <div class="tab-nav" id="contact-tabs">
-  <button class="accordion-btn" onclick="toggleCollapse('contact-teamadvisors',this)">Team and Advisors</button>
+  <button class="accordion-btn" id="btn-team-advisors" onclick="toggleCollapse('contact-teamadvisors',this)">Team and Advisors</button>
 </div>
 
 <div class="accordion-body" data-group="contact" id="contact-teamadvisors">
@@ -328,6 +385,152 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
 
 </section>
 
+<!-- ── Auth Modal ────────────────────────────────────────────────── -->
+<div class="auth-overlay" id="auth-overlay">
+  <div class="auth-box">
+    <button class="auth-close" onclick="closeAuthModal()">&times;</button>
+
+    <!-- Login -->
+    <div id="panel-login">
+      <h3 class="auth-title">Login</h3>
+      <input class="auth-field" id="login-email" type="email" placeholder="Email address" autocomplete="email">
+      <input class="auth-field" id="login-password" type="password" placeholder="Password" autocomplete="current-password">
+      <button class="auth-submit" onclick="doLogin()">Login</button>
+      <div class="auth-msg" id="login-msg"></div>
+      <div class="auth-links">
+        <button class="auth-link" onclick="showPanel('panel-forgot')">Forgot Password?</button>
+        <span style="color:#9ca3af">·</span>
+        <button class="auth-link" onclick="showPanel('panel-register')">New user? Register</button>
+      </div>
+    </div>
+
+    <!-- Register -->
+    <div id="panel-register" style="display:none">
+      <h3 class="auth-title">Create Account</h3>
+      <input class="auth-field" id="reg-email" type="email" placeholder="Email address" autocomplete="email">
+      <input class="auth-field" id="reg-password" type="password" placeholder="Password (min 6 characters)" autocomplete="new-password">
+      <input class="auth-field" id="reg-confirm" type="password" placeholder="Confirm password" autocomplete="new-password">
+      <button class="auth-submit" onclick="doRegister()">Send OTP</button>
+      <div class="auth-msg" id="reg-msg"></div>
+      <div class="auth-links">
+        <button class="auth-link" onclick="showPanel('panel-login')">Already registered? Login</button>
+      </div>
+    </div>
+
+    <!-- OTP verify (registration) -->
+    <div id="panel-otp-reg" style="display:none">
+      <h3 class="auth-title">Verify Email</h3>
+      <p class="auth-hint">Enter the 6-digit OTP sent to your email address</p>
+      <input class="auth-field" id="otp-reg-input" type="text" placeholder="Enter OTP" maxlength="6" autocomplete="one-time-code">
+      <button class="auth-submit" onclick="doVerifyRegOTP()">Verify &amp; Register</button>
+      <div class="auth-msg" id="otp-reg-msg"></div>
+    </div>
+
+    <!-- Forgot password -->
+    <div id="panel-forgot" style="display:none">
+      <h3 class="auth-title">Forgot Password</h3>
+      <p class="auth-hint">Enter your registered email to receive a reset OTP</p>
+      <input class="auth-field" id="forgot-email" type="email" placeholder="Registered email address" autocomplete="email">
+      <button class="auth-submit" onclick="doForgot()">Send Reset OTP</button>
+      <div class="auth-msg" id="forgot-msg"></div>
+      <div class="auth-links">
+        <button class="auth-link" onclick="showPanel('panel-login')">Back to Login</button>
+      </div>
+    </div>
+
+    <!-- OTP verify (reset) -->
+    <div id="panel-otp-reset" style="display:none">
+      <h3 class="auth-title">Verify OTP</h3>
+      <p class="auth-hint">Enter the 6-digit OTP sent to your email</p>
+      <input class="auth-field" id="otp-reset-input" type="text" placeholder="Enter OTP" maxlength="6" autocomplete="one-time-code">
+      <button class="auth-submit" onclick="doVerifyResetOTP()">Verify OTP</button>
+      <div class="auth-msg" id="otp-reset-msg"></div>
+    </div>
+
+    <!-- New password -->
+    <div id="panel-new-pw" style="display:none">
+      <h3 class="auth-title">Set New Password</h3>
+      <input class="auth-field" id="new-pw" type="password" placeholder="New password (min 6 characters)" autocomplete="new-password">
+      <input class="auth-field" id="new-pw-confirm" type="password" placeholder="Confirm new password" autocomplete="new-password">
+      <button class="auth-submit" onclick="doResetPW()">Reset Password</button>
+      <div class="auth-msg" id="new-pw-msg"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Auth Modal ─────────────────────────────────────────────── -->
+<div class="auth-overlay" id="auth-overlay">
+  <div class="auth-box">
+    <button class="auth-close" onclick="closeAuthModal()">&times;</button>
+
+    <!-- Login -->
+    <div id="panel-login">
+      <h3 class="auth-title">Login</h3>
+      <input class="auth-field" id="login-email" type="email" placeholder="Email address" autocomplete="email">
+      <input class="auth-field" id="login-password" type="password" placeholder="Password" autocomplete="current-password">
+      <button class="auth-submit" onclick="doLogin()">Login</button>
+      <div class="auth-msg" id="login-msg"></div>
+      <div class="auth-links">
+        <button class="auth-link" onclick="showPanel('panel-forgot')">Forgot Password?</button>
+        <span style="color:#9ca3af">&middot;</span>
+        <button class="auth-link" onclick="showPanel('panel-register')">New user? Register</button>
+      </div>
+    </div>
+
+    <!-- Register -->
+    <div id="panel-register" style="display:none">
+      <h3 class="auth-title">Create Account</h3>
+      <input class="auth-field" id="reg-email" type="email" placeholder="Email address" autocomplete="email">
+      <input class="auth-field" id="reg-password" type="password" placeholder="Password (min 6 characters)" autocomplete="new-password">
+      <input class="auth-field" id="reg-confirm" type="password" placeholder="Confirm password" autocomplete="new-password">
+      <button class="auth-submit" onclick="doRegister()">Send OTP</button>
+      <div class="auth-msg" id="reg-msg"></div>
+      <div class="auth-links">
+        <button class="auth-link" onclick="showPanel('panel-login')">Already registered? Login</button>
+      </div>
+    </div>
+
+    <!-- OTP verify (registration) -->
+    <div id="panel-otp-reg" style="display:none">
+      <h3 class="auth-title">Verify Email</h3>
+      <p class="auth-hint">Enter the 6-digit OTP sent to your email address</p>
+      <input class="auth-field" id="otp-reg-input" type="text" placeholder="Enter OTP" maxlength="6" autocomplete="one-time-code">
+      <button class="auth-submit" onclick="doVerifyRegOTP()">Verify &amp; Register</button>
+      <div class="auth-msg" id="otp-reg-msg"></div>
+    </div>
+
+    <!-- Forgot password -->
+    <div id="panel-forgot" style="display:none">
+      <h3 class="auth-title">Forgot Password</h3>
+      <p class="auth-hint">Enter your registered email to receive a reset OTP</p>
+      <input class="auth-field" id="forgot-email" type="email" placeholder="Registered email address" autocomplete="email">
+      <button class="auth-submit" onclick="doForgot()">Send Reset OTP</button>
+      <div class="auth-msg" id="forgot-msg"></div>
+      <div class="auth-links">
+        <button class="auth-link" onclick="showPanel('panel-login')">Back to Login</button>
+      </div>
+    </div>
+
+    <!-- OTP verify (reset) -->
+    <div id="panel-otp-reset" style="display:none">
+      <h3 class="auth-title">Verify OTP</h3>
+      <p class="auth-hint">Enter the 6-digit OTP sent to your email</p>
+      <input class="auth-field" id="otp-reset-input" type="text" placeholder="Enter OTP" maxlength="6" autocomplete="one-time-code">
+      <button class="auth-submit" onclick="doVerifyResetOTP()">Verify OTP</button>
+      <div class="auth-msg" id="otp-reset-msg"></div>
+    </div>
+
+    <!-- New password -->
+    <div id="panel-new-pw" style="display:none">
+      <h3 class="auth-title">Set New Password</h3>
+      <input class="auth-field" id="new-pw" type="password" placeholder="New password (min 6 characters)" autocomplete="new-password">
+      <input class="auth-field" id="new-pw-confirm" type="password" placeholder="Confirm new password" autocomplete="new-password">
+      <button class="auth-submit" onclick="doResetPW()">Reset Password</button>
+      <div class="auth-msg" id="new-pw-msg"></div>
+    </div>
+  </div>
+</div>
+
 <footer>
 © 2026 NEEL Solutions | Sustainable Livelihoods • Innovation • Technology • Research
 </footer>
@@ -335,6 +538,129 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
 <!-- html2pdf for brochure download -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
+/* ── Auth ──────────────────────────────────────────────────── */
+var AUTH_PANELS = ['panel-login','panel-register','panel-otp-reg',
+                   'panel-forgot','panel-otp-reset','panel-new-pw'];
+function showPanel(id) {
+  AUTH_PANELS.forEach(function(p) {
+    document.getElementById(p).style.display = p === id ? 'block' : 'none';
+  });
+}
+function openAuthModal(panel) {
+  showPanel(panel || 'panel-login');
+  document.getElementById('auth-overlay').classList.add('open');
+}
+function closeAuthModal() {
+  document.getElementById('auth-overlay').classList.remove('open');
+}
+function setAuthState(loggedIn, email) {
+  document.getElementById('nav-auth-btns').style.display = loggedIn ? 'none' : 'flex';
+  var ni = document.getElementById('nav-user-info');
+  ni.style.display = loggedIn ? 'flex' : 'none';
+  if (email) document.getElementById('nav-user-email').textContent = email;
+  document.getElementById('mobile-auth-btns').style.display = loggedIn ? 'none' : 'flex';
+  var mi = document.getElementById('mobile-user-info');
+  mi.style.display = loggedIn ? 'block' : 'none';
+  if (email) document.getElementById('mobile-user-email').textContent = email;
+  var ccTab = document.getElementById('tab-clients-collabs');
+  var taBtn = document.getElementById('btn-team-advisors');
+  if (ccTab) ccTab.style.display = loggedIn ? '' : 'none';
+  if (taBtn) taBtn.style.display = loggedIn ? 'block' : 'none';
+  if (!loggedIn && ccTab && ccTab.classList.contains('active')) {
+    var ob = document.querySelector('.tab-btn[onclick*="overview"]');
+    if (ob) showTab('impact', 'overview', ob);
+  }
+}
+document.addEventListener('DOMContentLoaded', function() {
+  var ccTab = document.getElementById('tab-clients-collabs');
+  var taBtn = document.getElementById('btn-team-advisors');
+  if (ccTab) ccTab.style.display = 'none';
+  if (taBtn) taBtn.style.display = 'none';
+  fetch('/check-auth').then(function(r){ return r.json(); }).then(function(d) {
+    if (d.logged_in) setAuthState(true, d.email);
+  }).catch(function(){});
+});
+function apiPost(url, body) {
+  return fetch(url, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(body)
+  }).then(function(r){ return r.json(); });
+}
+function setMsg(id, text, type) {
+  var el = document.getElementById(id);
+  el.textContent = text;
+  el.className = 'auth-msg' + (type ? ' ' + type : '');
+}
+function doRegister() {
+  var email = document.getElementById('reg-email').value.trim();
+  var pw    = document.getElementById('reg-password').value;
+  var pw2   = document.getElementById('reg-confirm').value;
+  if (!email || !pw) return setMsg('reg-msg','Please fill all fields.','error');
+  if (pw !== pw2)    return setMsg('reg-msg','Passwords do not match.','error');
+  if (pw.length < 6) return setMsg('reg-msg','Password must be at least 6 characters.','error');
+  setMsg('reg-msg','Sending OTP...','');
+  apiPost('/register',{email:email,password:pw}).then(function(d){
+    if (d.success){showPanel('panel-otp-reg');setMsg('otp-reg-msg','OTP sent to '+email,'success');}
+    else setMsg('reg-msg',d.message,'error');
+  });
+}
+function doVerifyRegOTP() {
+  var otp = document.getElementById('otp-reg-input').value.trim();
+  if (!otp) return setMsg('otp-reg-msg','Enter the OTP.','error');
+  setMsg('otp-reg-msg','Verifying...','');
+  apiPost('/verify-register',{otp:otp}).then(function(d){
+    if (d.success){
+      setMsg('otp-reg-msg',d.message,'success');
+      setTimeout(function(){closeAuthModal();showPanel('panel-login');},1800);
+    } else setMsg('otp-reg-msg',d.message,'error');
+  });
+}
+function doLogin() {
+  var email = document.getElementById('login-email').value.trim();
+  var pw    = document.getElementById('login-password').value;
+  if (!email || !pw) return setMsg('login-msg','Please fill all fields.','error');
+  setMsg('login-msg','Logging in...','');
+  apiPost('/login',{email:email,password:pw}).then(function(d){
+    if (d.success){setAuthState(true,d.email);closeAuthModal();}
+    else setMsg('login-msg',d.message,'error');
+  });
+}
+function doLogout() {
+  apiPost('/logout',{}).then(function(){setAuthState(false,null);});
+}
+function doForgot() {
+  var email = document.getElementById('forgot-email').value.trim();
+  if (!email) return setMsg('forgot-msg','Enter your email address.','error');
+  setMsg('forgot-msg','Sending OTP...','');
+  apiPost('/forgot-password',{email:email}).then(function(d){
+    if (d.success){showPanel('panel-otp-reset');setMsg('otp-reset-msg',d.message,'success');}
+    else setMsg('forgot-msg',d.message,'error');
+  });
+}
+function doVerifyResetOTP() {
+  var otp = document.getElementById('otp-reset-input').value.trim();
+  if (!otp) return setMsg('otp-reset-msg','Enter the OTP.','error');
+  setMsg('otp-reset-msg','Verifying...','');
+  apiPost('/verify-reset',{otp:otp}).then(function(d){
+    if (d.success) showPanel('panel-new-pw');
+    else setMsg('otp-reset-msg',d.message,'error');
+  });
+}
+function doResetPW() {
+  var pw  = document.getElementById('new-pw').value;
+  var pw2 = document.getElementById('new-pw-confirm').value;
+  if (pw !== pw2)    return setMsg('new-pw-msg','Passwords do not match.','error');
+  if (pw.length < 6) return setMsg('new-pw-msg','Password must be at least 6 characters.','error');
+  setMsg('new-pw-msg','Resetting...','');
+  apiPost('/reset-password',{password:pw}).then(function(d){
+    if (d.success){
+      setMsg('new-pw-msg',d.message,'success');
+      setTimeout(function(){closeAuthModal();showPanel('panel-login');},1800);
+    } else setMsg('new-pw-msg',d.message,'error');
+  });
+}
+
 /* ── Tab switching ─────────────────────────────────────── */
 function showTab(group, name, btn) {
   document.querySelectorAll('.tab-content[data-group="' + group + '"]').forEach(function(el) {
