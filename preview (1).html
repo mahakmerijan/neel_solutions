@@ -43,7 +43,10 @@ footer{background:#111827;color:white;text-align:center;padding:30px}
 .hero-btn{background:#f59e0b;color:white;padding:12px 25px;
 border-radius:25px;text-decoration:none;display:inline-block;margin-top:20px}
 
-/* ── Accordion / collapsible sub-button ─────────────────── */
+/* ── CSR card inside grid ──────────────────────────────────── */
+.stat.csr-card{cursor:pointer;border:2px dashed #2563eb;transition:border-color .2s,background .2s}
+.stat.csr-card:hover{background:#e8f0fe;border-color:#0f766e}
+.stat.csr-card h3{color:#2563eb}
 .accordion-btn{background:#e8f0fe;color:#1e3a8a;border:none;padding:10px 24px;
   border-radius:25px;cursor:pointer;font-weight:bold;font-size:.95rem;
   transition:all .2s;margin:18px auto 0;display:block}
@@ -58,6 +61,7 @@ border-radius:25px;cursor:pointer;font-weight:bold;font-size:.95rem;transition:a
 .tab-btn.active,.tab-btn:hover{background:#2563eb;color:white}
 .tab-content.hidden{display:none}
 .tab-content .stat h3{font-size:1.15rem;color:#0f766e}
+.accordion-body .stat h3{font-size:1.15rem;color:#0f766e}
 
 /* ── Brochure button in nav ──────────────────────────────── */
 .nav-brochure-btn{background:#f59e0b;color:white;border:none;padding:8px 20px;
@@ -206,11 +210,12 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
     <div class="stat"><h3>Financial Institutions</h3><p>Credit Linkage Partnerships</p></div>
     <div class="stat"><h3>Technology Partners</h3><p>Digital Solution Providers</p></div>
     <div class="stat"><h3>Policy Networks</h3><p>Advocacy &amp; Knowledge Coalitions</p></div>
+    <div class="stat csr-card" onclick="toggleCollapse('csr-body',this)">
+      <h3>CSR</h3><p>Click to expand &darr;</p>
+    </div>
   </div>
-  <!-- CSR collapsible -->
-  <button class="accordion-btn" onclick="toggleCollapse('csr-body',this)">CSR</button>
-  <div class="accordion-body" id="csr-body">
-    <div class="stats" style="margin-top:12px">
+  <div class="accordion-body" id="csr-body" style="margin-top:16px">
+    <div class="stats">
       <div class="stat"><h3>Green Livelihood Institute</h3><p>Sustainable Livelihoods &amp; Green Development Initiatives</p></div>
     </div>
   </div>
