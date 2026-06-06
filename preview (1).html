@@ -529,9 +529,9 @@ function doRegister() {
   if (pw.length < 6) return setMsg('reg-msg','Password must be at least 6 characters.','error');
   setMsg('reg-msg','Sending OTP...','');
   apiPost('/register',{email:email,password:pw}).then(function(d){
-    if (d.success){showPanel('panel-otp-reg');setMsg('otp-reg-msg','OTP sent to '+email,'success');}
+    if (d.success){showPanel('panel-otp-reg');setMsg('otp-reg-msg',d.message,'success');}
     else setMsg('reg-msg',d.message,'error');
-  });
+  }).catch(function(){setMsg('reg-msg','Network error. Please try again.','error');});
 }
 function doVerifyRegOTP() {
   var otp = document.getElementById('otp-reg-input').value.trim();
@@ -564,7 +564,7 @@ function doForgot() {
   apiPost('/forgot-password',{email:email}).then(function(d){
     if (d.success){showPanel('panel-otp-reset');setMsg('otp-reset-msg',d.message,'success');}
     else setMsg('forgot-msg',d.message,'error');
-  });
+  }).catch(function(){setMsg('forgot-msg','Network error. Please try again.','error');});
 }
 function doVerifyResetOTP() {
   var otp = document.getElementById('otp-reset-input').value.trim();

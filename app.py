@@ -86,10 +86,14 @@ def register():
     session["reg_password_hash"] = generate_password_hash(password)
     session["reg_otp"]           = otp
     session["reg_otp_time"]      = time.time()
+    if not MAIL_ENABLED:
+        print(f"[DEV] Register OTP for {email}: {otp}")
+        return jsonify({"success": True, "message": f"[Dev mode] Mail not configured. Your OTP is: {otp}"})
     try:
         _send_otp(email, otp, "NEEL Solutions – Registration OTP")
-    except Exception:
-        return jsonify({"success": False, "message": "Could not send OTP. Please check email settings."}), 500
+    except Exception as e:
+        print(f"[ERROR] Failed to send OTP: {e}")
+        return jsonify({"success": False, "message": "Could not send OTP. Please try again."}), 500
     return jsonify({"success": True, "message": "OTP sent to your email."})
 
 @app.route("/verify-register", methods=["POST"])
@@ -147,9 +151,13 @@ def forgot_password():
     session["reset_otp"]      = otp
     session["reset_otp_time"] = time.time()
     if user:
+        if not MAIL_ENABLED:
+            print(f"[DEV] Reset OTP for {email}: {otp}")
+            return jsonify({"success": True, "message": f"[Dev mode] Mail not configured. Your OTP is: {otp}"})
         try:
             _send_otp(email, otp, "NEEL Solutions – Password Reset OTP")
-        except Exception:
+        except Exception as e:
+            print(f"[ERROR] Failed to send reset OTP: {e}")
             return jsonify({"success": False, "message": "Could not send OTP. Please try again."}), 500
     # Always return success to prevent email enumeration
     return jsonify({"success": True, "message": "If this email is registered, an OTP has been sent."})
