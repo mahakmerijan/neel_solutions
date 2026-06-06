@@ -77,49 +77,22 @@ def register():
     if len(password) < 6:
         return jsonify({"success": False, "message": "Password must be at least 6 characters."}), 400
     conn     = get_db()
-    existing = conn.execute("SELECT verified FROM users WHERE email=?", (email,)).fetchone()
+    existing = conn.execute("SELECT id FROM users WHERE email=?", (email,)).fetchone()
     conn.close()
-    if existing and existing["verified"]:
+    if existing:
         return jsonify({"success": False, "message": "This email is already registered."}), 409
-    otp = _otp()
-    session["reg_email"]         = email
-    session["reg_password_hash"] = generate_password_hash(password)
-    session["reg_otp"]           = otp
-    session["reg_otp_time"]      = time.time()
-    if not MAIL_ENABLED:
-        print(f"[DEV] Register OTP for {email}: {otp}")
-        return jsonify({"success": True, "message": f"[Dev mode] Mail not configured. Your OTP is: {otp}"})
-    try:
-        _send_otp(email, otp, "NEEL Solutions – Registration OTP")
-    except Exception as e:
-        print(f"[ERROR] Failed to send OTP: {e}")
-        return jsonify({"success": False, "message": "Could not send OTP. Please try again."}), 500
-    return jsonify({"success": True, "message": "OTP sent to your email."})
-
-@app.route("/verify-register", methods=["POST"])
-def verify_register():
-    data = request.get_json() or {}
-    otp  = (data.get("otp") or "").strip()
-    if not session.get("reg_otp") or time.time() - session.get("reg_otp_time", 0) > OTP_EXPIRY:
-        return jsonify({"success": False, "message": "OTP expired. Please register again."}), 400
-    if otp != session["reg_otp"]:
-        return jsonify({"success": False, "message": "Incorrect OTP. Please try again."}), 400
-    email         = session["reg_email"]
-    password_hash = session["reg_password_hash"]
     conn = get_db()
     try:
         conn.execute(
-            "INSERT OR REPLACE INTO users (email, password_hash, verified) VALUES (?,?,1)",
-            (email, password_hash)
+            "INSERT INTO users (email, password_hash, verified) VALUES (?,?,1)",
+            (email, generate_password_hash(password))
         )
         conn.commit()
     except Exception:
         conn.close()
         return jsonify({"success": False, "message": "Registration failed. Please try again."}), 500
     conn.close()
-    for k in ["reg_email", "reg_password_hash", "reg_otp", "reg_otp_time"]:
-        session.pop(k, None)
-    return jsonify({"success": True, "message": "Registration successful! You can now log in."})
+    return jsonify({"success": True, "message": "Account created! You can now log in."})
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -127,7 +100,7 @@ def login():
     email    = (data.get("email") or "").strip().lower()
     password = data.get("password") or ""
     conn = get_db()
-    user = conn.execute("SELECT * FROM users WHERE email=? AND verified=1", (email,)).fetchone()
+    user = conn.execute("SELECT * FROM users WHERE email=?", (email,)).fetchone()
     conn.close()
     if not user or not check_password_hash(user["password_hash"], password):
         return jsonify({"success": False, "message": "Invalid email or password."}), 401
@@ -144,7 +117,7 @@ def forgot_password():
     data  = request.get_json() or {}
     email = (data.get("email") or "").strip().lower()
     conn  = get_db()
-    user  = conn.execute("SELECT id FROM users WHERE email=? AND verified=1", (email,)).fetchone()
+    user  = conn.execute("SELECT id FROM users WHERE email=?", (email,)).fetchone()
     conn.close()
     otp = _otp()
     session["reset_email"]    = email

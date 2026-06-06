@@ -411,20 +411,11 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
       <input class="auth-field" id="reg-email" type="email" placeholder="Email address" autocomplete="email">
       <input class="auth-field" id="reg-password" type="password" placeholder="Password (min 6 characters)" autocomplete="new-password">
       <input class="auth-field" id="reg-confirm" type="password" placeholder="Confirm password" autocomplete="new-password">
-      <button class="auth-submit" onclick="doRegister()">Send OTP</button>
+      <button class="auth-submit" onclick="doRegister()">Register</button>
       <div class="auth-msg" id="reg-msg"></div>
       <div class="auth-links">
         <button class="auth-link" onclick="showPanel('panel-login')">Already registered? Login</button>
       </div>
-    </div>
-
-    <!-- OTP verify (registration) -->
-    <div id="panel-otp-reg" style="display:none">
-      <h3 class="auth-title">Verify Email</h3>
-      <p class="auth-hint">Enter the 6-digit OTP sent to your email address</p>
-      <input class="auth-field" id="otp-reg-input" type="text" placeholder="Enter OTP" maxlength="6" autocomplete="one-time-code">
-      <button class="auth-submit" onclick="doVerifyRegOTP()">Verify &amp; Register</button>
-      <div class="auth-msg" id="otp-reg-msg"></div>
     </div>
 
     <!-- Forgot password -->
@@ -467,7 +458,7 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
 /* ── Auth ──────────────────────────────────────────────────── */
-var AUTH_PANELS = ['panel-login','panel-register','panel-otp-reg',
+var AUTH_PANELS = ['panel-login','panel-register',
                    'panel-forgot','panel-otp-reset','panel-new-pw'];
 function showPanel(id) {
   AUTH_PANELS.forEach(function(p) {
@@ -527,22 +518,11 @@ function doRegister() {
   if (!email || !pw) return setMsg('reg-msg','Please fill all fields.','error');
   if (pw !== pw2)    return setMsg('reg-msg','Passwords do not match.','error');
   if (pw.length < 6) return setMsg('reg-msg','Password must be at least 6 characters.','error');
-  setMsg('reg-msg','Sending OTP...','');
+  setMsg('reg-msg','Creating account...','');
   apiPost('/register',{email:email,password:pw}).then(function(d){
-    if (d.success){showPanel('panel-otp-reg');setMsg('otp-reg-msg',d.message,'success');}
+    if (d.success){setMsg('reg-msg',d.message,'success');setTimeout(function(){showPanel('panel-login');},1500);}
     else setMsg('reg-msg',d.message,'error');
   }).catch(function(){setMsg('reg-msg','Network error. Please try again.','error');});
-}
-function doVerifyRegOTP() {
-  var otp = document.getElementById('otp-reg-input').value.trim();
-  if (!otp) return setMsg('otp-reg-msg','Enter the OTP.','error');
-  setMsg('otp-reg-msg','Verifying...','');
-  apiPost('/verify-register',{otp:otp}).then(function(d){
-    if (d.success){
-      setMsg('otp-reg-msg',d.message,'success');
-      setTimeout(function(){closeAuthModal();showPanel('panel-login');},1800);
-    } else setMsg('otp-reg-msg',d.message,'error');
-  });
 }
 function doLogin() {
   var email = document.getElementById('login-email').value.trim();
