@@ -13,7 +13,8 @@ app.config["MAIL_USE_TLS"]        = os.environ.get("MAIL_USE_TLS",  "true").lowe
 app.config["MAIL_USERNAME"]       = os.environ.get("MAIL_USERNAME")
 app.config["MAIL_PASSWORD"]       = os.environ.get("MAIL_PASSWORD")
 app.config["MAIL_DEFAULT_SENDER"] = os.environ.get("MAIL_USERNAME")
-mail = Mail(app)
+MAIL_ENABLED = bool(os.environ.get("MAIL_USERNAME"))
+mail = Mail(app) if MAIL_ENABLED else None
 
 # ── Database ──────────────────────────────────────────────────
 DB_PATH = os.path.join(os.path.dirname(__file__), "users.db")
@@ -44,6 +45,8 @@ def _otp():
     return str(random.randint(100000, 999999))
 
 def _send_otp(email, otp, subject):
+    if not MAIL_ENABLED or mail is None:
+        raise RuntimeError("Mail not configured")
     msg = Message(subject, recipients=[email])
     msg.body = (
         f"Dear User,\n\n"
