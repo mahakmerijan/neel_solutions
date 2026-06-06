@@ -43,6 +43,14 @@ footer{background:#111827;color:white;text-align:center;padding:30px}
 .hero-btn{background:#f59e0b;color:white;padding:12px 25px;
 border-radius:25px;text-decoration:none;display:inline-block;margin-top:20px}
 
+/* ── Accordion / collapsible sub-button ─────────────────── */
+.accordion-btn{background:#e8f0fe;color:#1e3a8a;border:none;padding:10px 24px;
+  border-radius:25px;cursor:pointer;font-weight:bold;font-size:.95rem;
+  transition:all .2s;margin:18px auto 0;display:block}
+.accordion-btn.open,.accordion-btn:hover{background:#2563eb;color:white}
+.accordion-body{display:none;margin-top:16px}
+.accordion-body.open{display:block}
+
 /* ── Tab system ─────────────────────────────────────────── */
 .tab-nav{display:flex;gap:10px;margin-bottom:28px;justify-content:center;flex-wrap:wrap}
 .tab-btn{background:#e8f0fe;color:#1e3a8a;border:none;padding:10px 24px;
@@ -178,7 +186,6 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
 <div class="tab-nav" id="impact-tabs">
   <button class="tab-btn active" onclick="showTab('impact','overview',this)">Overview</button>
   <button class="tab-btn" onclick="showTab('impact','clientscollabs',this)">Clients &amp; Collaborations</button>
-  <button class="tab-btn" onclick="showTab('impact','csr',this)">CSR</button>
 </div>
 
 <div class="tab-content" data-group="impact" id="impact-overview">
@@ -200,14 +207,10 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
     <div class="stat"><h3>Technology Partners</h3><p>Digital Solution Providers</p></div>
     <div class="stat"><h3>Policy Networks</h3><p>Advocacy &amp; Knowledge Coalitions</p></div>
   </div>
-</div>
-
-<div class="tab-content hidden" data-group="impact" id="impact-csr">
-  <div class="tab-nav" id="csr-tabs" style="margin-top:8px">
-    <button class="tab-btn active" onclick="showTab('csr','gli',this)">Green Livelihood Institute</button>
-  </div>
-  <div class="tab-content" data-group="csr" id="csr-gli">
-    <div class="stats">
+  <!-- CSR collapsible -->
+  <button class="accordion-btn" onclick="toggleCollapse('csr-body',this)">CSR</button>
+  <div class="accordion-body" id="csr-body">
+    <div class="stats" style="margin-top:12px">
       <div class="stat"><h3>Green Livelihood Institute</h3><p>Sustainable Livelihoods &amp; Green Development Initiatives</p></div>
     </div>
   </div>
@@ -300,10 +303,10 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
 </p>
 
 <div class="tab-nav" id="contact-tabs">
-  <button class="tab-btn active" onclick="showTab('contact','teamadvisors',this)">Team and Advisors</button>
+  <button class="accordion-btn" onclick="toggleCollapse('contact-teamadvisors',this)">Team and Advisors</button>
 </div>
 
-<div class="tab-content" data-group="contact" id="contact-teamadvisors">
+<div class="accordion-body" data-group="contact" id="contact-teamadvisors">
   <div class="stats">
     <div class="stat"><h3>Leadership</h3><p>Founders &amp; Directors</p></div>
     <div class="stat"><h3>Programme Team</h3><p>Project Managers &amp; Specialists</p></div>
@@ -368,6 +371,13 @@ function downloadBrochure() {
       delete el.dataset.wasHidden;
     });
   });
+}
+
+/* ── Accordion toggle ──────────────────────────────────────── */
+function toggleCollapse(id, btn) {
+  var body = document.getElementById(id);
+  var isOpen = body.classList.toggle('open');
+  btn.classList.toggle('open', isOpen);
 }
 
 /* ── Hamburger toggle ──────────────────────────────────────── */
