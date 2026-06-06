@@ -191,6 +191,7 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
 .nav-user-email{color:rgba(255,255,255,.85);font-size:.8rem;max-width:130px;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:768px){.nav-auth{display:none!important}}
+</style>
 </head>
 <body>
 
@@ -400,79 +401,6 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
       <div class="auth-links">
         <button class="auth-link" onclick="showPanel('panel-forgot')">Forgot Password?</button>
         <span style="color:#9ca3af">·</span>
-        <button class="auth-link" onclick="showPanel('panel-register')">New user? Register</button>
-      </div>
-    </div>
-
-    <!-- Register -->
-    <div id="panel-register" style="display:none">
-      <h3 class="auth-title">Create Account</h3>
-      <input class="auth-field" id="reg-email" type="email" placeholder="Email address" autocomplete="email">
-      <input class="auth-field" id="reg-password" type="password" placeholder="Password (min 6 characters)" autocomplete="new-password">
-      <input class="auth-field" id="reg-confirm" type="password" placeholder="Confirm password" autocomplete="new-password">
-      <button class="auth-submit" onclick="doRegister()">Send OTP</button>
-      <div class="auth-msg" id="reg-msg"></div>
-      <div class="auth-links">
-        <button class="auth-link" onclick="showPanel('panel-login')">Already registered? Login</button>
-      </div>
-    </div>
-
-    <!-- OTP verify (registration) -->
-    <div id="panel-otp-reg" style="display:none">
-      <h3 class="auth-title">Verify Email</h3>
-      <p class="auth-hint">Enter the 6-digit OTP sent to your email address</p>
-      <input class="auth-field" id="otp-reg-input" type="text" placeholder="Enter OTP" maxlength="6" autocomplete="one-time-code">
-      <button class="auth-submit" onclick="doVerifyRegOTP()">Verify &amp; Register</button>
-      <div class="auth-msg" id="otp-reg-msg"></div>
-    </div>
-
-    <!-- Forgot password -->
-    <div id="panel-forgot" style="display:none">
-      <h3 class="auth-title">Forgot Password</h3>
-      <p class="auth-hint">Enter your registered email to receive a reset OTP</p>
-      <input class="auth-field" id="forgot-email" type="email" placeholder="Registered email address" autocomplete="email">
-      <button class="auth-submit" onclick="doForgot()">Send Reset OTP</button>
-      <div class="auth-msg" id="forgot-msg"></div>
-      <div class="auth-links">
-        <button class="auth-link" onclick="showPanel('panel-login')">Back to Login</button>
-      </div>
-    </div>
-
-    <!-- OTP verify (reset) -->
-    <div id="panel-otp-reset" style="display:none">
-      <h3 class="auth-title">Verify OTP</h3>
-      <p class="auth-hint">Enter the 6-digit OTP sent to your email</p>
-      <input class="auth-field" id="otp-reset-input" type="text" placeholder="Enter OTP" maxlength="6" autocomplete="one-time-code">
-      <button class="auth-submit" onclick="doVerifyResetOTP()">Verify OTP</button>
-      <div class="auth-msg" id="otp-reset-msg"></div>
-    </div>
-
-    <!-- New password -->
-    <div id="panel-new-pw" style="display:none">
-      <h3 class="auth-title">Set New Password</h3>
-      <input class="auth-field" id="new-pw" type="password" placeholder="New password (min 6 characters)" autocomplete="new-password">
-      <input class="auth-field" id="new-pw-confirm" type="password" placeholder="Confirm new password" autocomplete="new-password">
-      <button class="auth-submit" onclick="doResetPW()">Reset Password</button>
-      <div class="auth-msg" id="new-pw-msg"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ── Auth Modal ─────────────────────────────────────────────── -->
-<div class="auth-overlay" id="auth-overlay">
-  <div class="auth-box">
-    <button class="auth-close" onclick="closeAuthModal()">&times;</button>
-
-    <!-- Login -->
-    <div id="panel-login">
-      <h3 class="auth-title">Login</h3>
-      <input class="auth-field" id="login-email" type="email" placeholder="Email address" autocomplete="email">
-      <input class="auth-field" id="login-password" type="password" placeholder="Password" autocomplete="current-password">
-      <button class="auth-submit" onclick="doLogin()">Login</button>
-      <div class="auth-msg" id="login-msg"></div>
-      <div class="auth-links">
-        <button class="auth-link" onclick="showPanel('panel-forgot')">Forgot Password?</button>
-        <span style="color:#9ca3af">&middot;</span>
         <button class="auth-link" onclick="showPanel('panel-register')">New user? Register</button>
       </div>
     </div>
