@@ -60,8 +60,10 @@ border-radius:25px;text-decoration:none;display:inline-block;margin-top:20px}
 border-radius:25px;cursor:pointer;font-weight:bold;font-size:.95rem;transition:all .2s}
 .tab-btn.active,.tab-btn:hover{background:#2563eb;color:white}
 .tab-content.hidden{display:none}
-.tab-content .stat h3{font-size:1.15rem;color:#0f766e}
-.accordion-body .stat h3{font-size:1.15rem;color:#0f766e}
+.tab-content .stat h3{font-size:1.15rem;color:#0f766e;text-align:center}
+.tab-content .stat p{text-align:center}
+.accordion-body .stat h3{font-size:1.15rem;color:#0f766e;text-align:center}
+.accordion-body .stat p{text-align:center}
 
 /* ── Brochure button in nav ──────────────────────────────── */
 .nav-brochure-btn{background:#f59e0b;color:white;border:none;padding:8px 20px;
@@ -211,7 +213,7 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
     <div class="stat"><h3>Technology Partners</h3><p>Digital Solution Providers</p></div>
     <div class="stat"><h3>Policy Networks</h3><p>Advocacy &amp; Knowledge Coalitions</p></div>
     <div class="stat csr-card" onclick="toggleCollapse('csr-body',this)">
-      <h3>CSR</h3><p>Click to expand &darr;</p>
+      <h3>CSR</h3>
     </div>
   </div>
   <div class="accordion-body" id="csr-body" style="margin-top:16px">
