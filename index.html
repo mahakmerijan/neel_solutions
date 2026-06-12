@@ -43,10 +43,6 @@ footer{background:#111827;color:white;text-align:center;padding:30px}
 .hero-btn{background:#f59e0b;color:white;padding:12px 25px;
 border-radius:25px;text-decoration:none;display:inline-block;margin-top:20px}
 
-/* ── CSR card inside grid ──────────────────────────────────── */
-.stat.csr-card{cursor:pointer;border:2px dashed #2563eb;transition:border-color .2s,background .2s}
-.stat.csr-card:hover{background:#e8f0fe;border-color:#0f766e}
-.stat.csr-card h3{color:#2563eb}
 .accordion-btn{background:#e8f0fe;color:#1e3a8a;border:none;padding:10px 24px;
   border-radius:25px;cursor:pointer;font-weight:bold;font-size:.95rem;
   transition:all .2s;margin:18px auto 0;display:block}
@@ -254,6 +250,8 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
 <div class="tab-nav" id="impact-tabs">
   <button class="tab-btn active" onclick="showTab('impact','overview',this)">Overview</button>
   <button class="tab-btn" id="tab-clients-collabs" onclick="showTab('impact','clientscollabs',this)">Clients &amp; Collaborations</button>
+  <button class="tab-btn" onclick="showTab('impact','csr',this)">CSR</button>
+  <button class="tab-btn" onclick="showTab('impact','greenlivelihood',this)">Green Livelihood Institute</button>
 </div>
 
 <div class="tab-content" data-group="impact" id="impact-overview">
@@ -274,14 +272,18 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
     <div class="stat"><h3>Financial Institutions</h3><p>Credit Linkage Partnerships</p></div>
     <div class="stat"><h3>Technology Partners</h3><p>Digital Solution Providers</p></div>
     <div class="stat"><h3>Policy Networks</h3><p>Advocacy &amp; Knowledge Coalitions</p></div>
-    <div class="stat csr-card" onclick="toggleCollapse('csr-body',this)">
-      <h3>CSR</h3>
-    </div>
   </div>
-  <div class="accordion-body" id="csr-body" style="margin-top:16px">
-    <div class="stats">
-      <div class="stat"><h3>Green Livelihood Institute</h3><p>Sustainable Livelihoods &amp; Green Development Initiatives</p></div>
-    </div>
+</div>
+
+<div class="tab-content hidden" data-group="impact" id="impact-csr">
+  <div class="stats">
+    <div class="stat"><h3>CSR</h3><p>Corporate Social Responsibility Initiatives</p></div>
+  </div>
+</div>
+
+<div class="tab-content hidden" data-group="impact" id="impact-greenlivelihood">
+  <div class="stats">
+    <div class="stat"><h3>Green Livelihood Institute</h3><p>Sustainable Livelihoods &amp; Green Development Initiatives</p></div>
   </div>
 </div>
 
