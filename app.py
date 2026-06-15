@@ -1,6 +1,7 @@
-import os, random, time, sqlite3
+import os, random, time, sqlite3, uuid
 from flask import Flask, send_from_directory, request, jsonify, session
 from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.utils import secure_filename
 from flask_mail import Mail, Message
 
 app = Flask(__name__, static_folder=".", static_url_path="")
@@ -24,6 +25,12 @@ def get_db():
     conn.row_factory = sqlite3.Row
     return conn
 
+UPLOAD_FOLDER    = os.path.join(os.path.dirname(__file__), "uploads", "haat_bazar")
+ALLOWED_IMG_EXTS = {"png", "jpg", "jpeg", "gif", "webp"}
+
+def _allowed_img(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_IMG_EXTS
+
 def init_db():
     conn = get_db()
     conn.execute("""
@@ -32,6 +39,22 @@ def init_db():
             email         TEXT UNIQUE NOT NULL,
             password_hash TEXT NOT NULL,
             verified      INTEGER DEFAULT 0
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS haat_bazar_ads (
+            id            INTEGER PRIMARY KEY AUTOINCREMENT,
+            title         TEXT NOT NULL,
+            category      TEXT NOT NULL,
+            description   TEXT,
+            price         TEXT,
+            location      TEXT,
+            contact_name  TEXT,
+            contact_phone TEXT,
+            contact_email TEXT,
+            image_filename TEXT,
+            posted_by     TEXT,
+            created_at    TEXT DEFAULT (datetime('now','localtime'))
         )
     """)
     conn.commit()
@@ -162,6 +185,83 @@ def reset_password():
     for k in ["reset_email", "reset_otp", "reset_otp_time", "reset_verified"]:
         session.pop(k, None)
     return jsonify({"success": True, "message": "Password reset successfully. You can now log in."})
+
+# ── Haat Bazar ───────────────────────────────────────────────
+@app.route("/haat-bazar/ads", methods=["GET"])
+def get_haat_bazar_ads():
+    category = request.args.get("category", "")
+    conn = get_db()
+    if category and category != "All":
+        ads = conn.execute(
+            "SELECT * FROM haat_bazar_ads WHERE category=? ORDER BY created_at DESC",
+            (category,)
+        ).fetchall()
+    else:
+        ads = conn.execute(
+            "SELECT * FROM haat_bazar_ads ORDER BY created_at DESC"
+        ).fetchall()
+    conn.close()
+    return jsonify([dict(a) for a in ads])
+
+@app.route("/haat-bazar/ads", methods=["POST"])
+def post_haat_bazar_ad():
+    title         = (request.form.get("title")         or "").strip()
+    category      = (request.form.get("category")      or "").strip()
+    description   = (request.form.get("description")   or "").strip()
+    price         = (request.form.get("price")         or "").strip()
+    location      = (request.form.get("location")      or "").strip()
+    contact_name  = (request.form.get("contact_name")  or "").strip()
+    contact_phone = (request.form.get("contact_phone") or "").strip()
+    contact_email = (request.form.get("contact_email") or "").strip()
+    posted_by     = session.get("user_email") or "Guest"
+    if not title or not category or not contact_name or not contact_phone:
+        return jsonify({"success": False, "message": "Please fill all required fields."}), 400
+    image_filename = None
+    if "image" in request.files:
+        f = request.files["image"]
+        if f and f.filename and _allowed_img(f.filename):
+            os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+            ext = secure_filename(f.filename).rsplit(".", 1)[1].lower()
+            image_filename = uuid.uuid4().hex + "." + ext
+            f.save(os.path.join(UPLOAD_FOLDER, image_filename))
+    conn = get_db()
+    conn.execute(
+        """INSERT INTO haat_bazar_ads
+           (title,category,description,price,location,
+            contact_name,contact_phone,contact_email,image_filename,posted_by)
+           VALUES (?,?,?,?,?,?,?,?,?,?)""",
+        (title, category, description, price, location,
+         contact_name, contact_phone, contact_email, image_filename, posted_by)
+    )
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True, "message": "Ad posted successfully!"})
+
+@app.route("/haat-bazar/ads/<int:ad_id>", methods=["DELETE"])
+def delete_haat_bazar_ad(ad_id):
+    user_email = session.get("user_email")
+    if not user_email:
+        return jsonify({"success": False, "message": "Login required."}), 401
+    conn = get_db()
+    ad = conn.execute("SELECT * FROM haat_bazar_ads WHERE id=?", (ad_id,)).fetchone()
+    if not ad:
+        conn.close()
+        return jsonify({"success": False, "message": "Ad not found."}), 404
+    if ad["posted_by"] != user_email:
+        conn.close()
+        return jsonify({"success": False, "message": "You can only delete your own ads."}), 403
+    if ad["image_filename"]:
+        img_path = os.path.join(UPLOAD_FOLDER, ad["image_filename"])
+        if os.path.exists(img_path):
+            os.remove(img_path)
+    conn.execute("DELETE FROM haat_bazar_ads WHERE id=?", (ad_id,))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True, "message": "Ad deleted."})
+
+@app.route("/uploads/haat_bazar/<filename>")
+def serve_haat_bazar_upload(filename):
+    return send_from_directory(UPLOAD_FOLDER, secure_filename(filename))
 
 if __name__ == "__main__":
     app.run()

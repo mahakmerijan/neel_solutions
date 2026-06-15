@@ -191,6 +191,96 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
 .nav-user-email{color:rgba(255,255,255,.85);font-size:.8rem;max-width:130px;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 @media(max-width:768px){.nav-auth{display:none!important}}
+
+/* ── Haat Bazar ──────────────────────────────────────────── */
+.hb-launch-btn{background:#f59e0b;color:white;border:none;padding:13px 30px;
+  border-radius:25px;font-size:1rem;font-weight:bold;cursor:pointer;
+  margin-top:14px;box-shadow:0 4px 12px rgba(245,158,11,.3);
+  transition:background .2s,transform .15s;display:inline-flex;align-items:center;gap:8px}
+.hb-launch-btn:hover{background:#d97706;transform:translateY(-1px)}
+
+.hb-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,.65);z-index:20000;align-items:flex-start;
+  justify-content:center;overflow-y:auto;padding:20px;box-sizing:border-box}
+.hb-overlay.open{display:flex}
+.hb-modal{background:#f5f8fb;border-radius:18px;width:100%;max-width:1100px;
+  max-height:92vh;box-shadow:0 25px 80px rgba(0,0,0,.4);
+  display:flex;flex-direction:column;overflow:hidden;margin:auto}
+.hb-header{background:linear-gradient(135deg,#0f766e,#2563eb);color:white;
+  padding:18px 24px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.hb-title{font-size:1.35rem;font-weight:bold}
+.hb-subtitle{font-size:.82rem;opacity:.8;margin-left:10px}
+.hb-post-btn{background:#f59e0b;color:white;border:none;padding:8px 20px;
+  border-radius:20px;font-weight:bold;cursor:pointer;font-size:.88rem;transition:background .2s}
+.hb-post-btn:hover{background:#d97706}
+.hb-close-btn{background:rgba(255,255,255,.15);color:white;border:none;
+  width:34px;height:34px;border-radius:50%;font-size:1.4rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:background .2s;line-height:1;margin-left:8px}
+.hb-close-btn:hover{background:rgba(255,255,255,.3)}
+
+#hb-listings-view{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.hb-filters{background:white;padding:12px 20px;display:flex;gap:8px;
+  flex-wrap:wrap;border-bottom:1px solid #e5e7eb;flex-shrink:0}
+.hb-filter-btn{background:#f3f4f6;color:#374151;border:none;padding:7px 16px;
+  border-radius:20px;cursor:pointer;font-size:.85rem;font-weight:600;transition:all .2s}
+.hb-filter-btn.active,.hb-filter-btn:hover{background:#2563eb;color:white}
+.hb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:18px;padding:20px;overflow-y:auto;flex:1}
+.hb-empty{text-align:center;color:#6b7280;padding:50px;grid-column:1/-1;font-size:1rem}
+
+.hb-card{background:white;border-radius:14px;overflow:hidden;
+  box-shadow:0 3px 12px rgba(0,0,0,.09);transition:box-shadow .2s,transform .15s;
+  display:flex;flex-direction:column}
+.hb-card:hover{box-shadow:0 6px 20px rgba(0,0,0,.14);transform:translateY(-2px)}
+.hb-card-img{width:100%;height:170px;object-fit:cover}
+.hb-card-img-placeholder{width:100%;height:120px;background:linear-gradient(135deg,#e8f0fe,#dbeafe);
+  display:flex;align-items:center;justify-content:center;color:#93c5fd;font-size:2.5rem}
+.hb-card-body{padding:14px;flex:1;display:flex;flex-direction:column;gap:5px}
+.hb-card-title{font-size:1rem;font-weight:bold;color:#1e3a8a}
+.hb-card-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.hb-tag{background:#e8f0fe;color:#2563eb;padding:2px 10px;border-radius:12px;font-size:.78rem;font-weight:600}
+.hb-price{font-weight:bold;color:#0f766e;font-size:.9rem}
+.hb-card-loc{font-size:.82rem;color:#6b7280}
+.hb-card-desc{font-size:.88rem;color:#374151;line-height:1.5;flex:1;
+  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.hb-card-contact{border-top:1px solid #f3f4f6;padding-top:8px;margin-top:4px;
+  font-size:.85rem;color:#374151;display:flex;flex-direction:column;gap:3px}
+.hb-card-contact a{color:#2563eb;text-decoration:none}
+.hb-card-contact a:hover{text-decoration:underline}
+.hb-card-date{font-size:.75rem;color:#9ca3af}
+.hb-del-btn{background:#fef2f2;color:#dc2626;border:1px solid #fecaca;
+  padding:4px 12px;border-radius:8px;cursor:pointer;font-size:.8rem;
+  margin-top:6px;transition:background .2s;align-self:flex-start}
+.hb-del-btn:hover{background:#fee2e2}
+
+#hb-form-view{flex:1;overflow-y:auto;background:white}
+.hb-form-container{padding:24px;max-width:700px;margin:0 auto}
+.hb-form-title{color:#1e3a8a;font-size:1.15rem;margin-bottom:18px}
+.hb-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+.hb-form-group{display:flex;flex-direction:column;gap:5px}
+.hb-form-group label{font-size:.88rem;font-weight:600;color:#374151}
+.hb-full-width{grid-column:1/-1}
+.hb-input{padding:10px 13px;border:1px solid #d1d5db;border-radius:8px;font-size:.95rem;
+  transition:border-color .2s;font-family:inherit;width:100%;box-sizing:border-box}
+.hb-input:focus{outline:none;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+textarea.hb-input{resize:vertical}
+.hb-form-actions{display:flex;gap:12px}
+.hb-submit-btn{background:#2563eb;color:white;border:none;padding:11px 28px;
+  border-radius:8px;font-weight:bold;font-size:.95rem;cursor:pointer;transition:background .2s}
+.hb-submit-btn:hover{background:#1d4ed8}
+.hb-cancel-btn{background:#f3f4f6;color:#374151;border:none;padding:11px 22px;
+  border-radius:8px;font-weight:bold;font-size:.95rem;cursor:pointer;transition:background .2s}
+.hb-cancel-btn:hover{background:#e5e7eb}
+.hb-form-msg{margin-top:12px;font-size:.88rem;min-height:18px}
+.hb-msg-error{color:#dc2626}.hb-msg-success{color:#059669}
+@media(max-width:768px){
+  .hb-overlay{padding:0}
+  .hb-modal{border-radius:0;max-height:100vh}
+  .hb-grid{grid-template-columns:1fr 1fr;gap:12px;padding:14px}
+  .hb-form-grid{grid-template-columns:1fr}
+  .hb-full-width{grid-column:1}
+}
+@media(max-width:480px){.hb-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -277,7 +367,13 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
 
 <div class="tab-content hidden" data-group="impact" id="impact-csr">
   <div class="stats">
-    <div class="stat"><h3>CSR</h3><p>Corporate Social Responsibility Initiatives</p></div>
+    <div class="stat">
+      <h3>CSR</h3>
+      <p>Corporate Social Responsibility Initiatives</p>
+      <button class="hb-launch-btn" onclick="openHaatBazar()">
+        <i class="fas fa-store"></i> Haat Bazar
+      </button>
+    </div>
   </div>
 </div>
 
@@ -401,6 +497,95 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
 
 </section>
 
+<!-- ── Haat Bazar Modal ──────────────────────────────────────────── -->
+<div class="hb-overlay" id="hb-overlay">
+  <div class="hb-modal">
+    <div class="hb-header">
+      <div style="display:flex;align-items:center">
+        <span style="font-size:1.4rem">&#x1F6D2;</span>
+        <span class="hb-title" style="margin-left:10px">Haat Bazar</span>
+        <span class="hb-subtitle">Community Marketplace</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <button class="hb-post-btn" id="hb-post-toggle" onclick="toggleHBForm()">Post Ad</button>
+        <button class="hb-close-btn" onclick="closeHaatBazar()">&#x00D7;</button>
+      </div>
+    </div>
+
+    <!-- Listings view -->
+    <div id="hb-listings-view">
+      <div class="hb-filters">
+        <button class="hb-filter-btn active" onclick="filterHBAds('All',this)">All</button>
+        <button class="hb-filter-btn" onclick="filterHBAds('Agriculture',this)">Agriculture</button>
+        <button class="hb-filter-btn" onclick="filterHBAds('Handicraft',this)">Handicraft</button>
+        <button class="hb-filter-btn" onclick="filterHBAds('Food &amp; Beverage',this)">Food &amp; Beverage</button>
+        <button class="hb-filter-btn" onclick="filterHBAds('Livestock',this)">Livestock</button>
+        <button class="hb-filter-btn" onclick="filterHBAds('Services',this)">Services</button>
+        <button class="hb-filter-btn" onclick="filterHBAds('Other',this)">Other</button>
+      </div>
+      <div class="hb-grid" id="hb-grid"></div>
+    </div>
+
+    <!-- Post Ad form view -->
+    <div id="hb-form-view" style="display:none">
+      <div class="hb-form-container">
+        <h3 class="hb-form-title">Post Your Ad</h3>
+        <div class="hb-form-grid">
+          <div class="hb-form-group hb-full-width">
+            <label>Title *</label>
+            <input type="text" id="hb-title" class="hb-input" placeholder="What are you selling / offering?">
+          </div>
+          <div class="hb-form-group">
+            <label>Category *</label>
+            <select id="hb-category" class="hb-input">
+              <option value="">Select category</option>
+              <option>Agriculture</option>
+              <option>Handicraft</option>
+              <option>Food &amp; Beverage</option>
+              <option>Livestock</option>
+              <option>Services</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="hb-form-group">
+            <label>Price</label>
+            <input type="text" id="hb-price" class="hb-input" placeholder="e.g. &#x20B9;500 / Free / Negotiable">
+          </div>
+          <div class="hb-form-group hb-full-width">
+            <label>Location *</label>
+            <input type="text" id="hb-location" class="hb-input" placeholder="Village / Block / District">
+          </div>
+          <div class="hb-form-group hb-full-width">
+            <label>Description *</label>
+            <textarea id="hb-description" class="hb-input" rows="3" placeholder="Describe your product or service in detail..."></textarea>
+          </div>
+          <div class="hb-form-group">
+            <label>Contact Name *</label>
+            <input type="text" id="hb-contact-name" class="hb-input" placeholder="Your name">
+          </div>
+          <div class="hb-form-group">
+            <label>Contact Phone *</label>
+            <input type="tel" id="hb-contact-phone" class="hb-input" placeholder="+91 XXXXXXXXXX">
+          </div>
+          <div class="hb-form-group">
+            <label>Contact Email</label>
+            <input type="email" id="hb-contact-email" class="hb-input" placeholder="Optional">
+          </div>
+          <div class="hb-form-group">
+            <label>Photo <span style="font-weight:normal;color:#9ca3af">(optional)</span></label>
+            <input type="file" id="hb-image" class="hb-input" accept="image/*">
+          </div>
+        </div>
+        <div class="hb-form-actions">
+          <button class="hb-submit-btn" onclick="submitHBad()">Submit Ad</button>
+          <button class="hb-cancel-btn" onclick="toggleHBForm()">Cancel</button>
+        </div>
+        <div id="hb-form-msg" class="hb-form-msg"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ── Auth Modal ────────────────────────────────────────────────── -->
 <div class="auth-overlay" id="auth-overlay">
   <div class="auth-box">
@@ -475,6 +660,7 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
 /* ── Auth ──────────────────────────────────────────────────── */
 var AUTH_PANELS = ['panel-login','panel-register',
                    'panel-forgot','panel-otp-reset','panel-new-pw'];
+var hbCurrentUser = null;
 function showPanel(id) {
   AUTH_PANELS.forEach(function(p) {
     document.getElementById(p).style.display = p === id ? 'block' : 'none';
@@ -504,6 +690,7 @@ function setAuthState(loggedIn, email) {
     var ob = document.querySelector('.tab-btn[onclick*="overview"]');
     if (ob) showTab('impact', 'overview', ob);
   }
+  hbCurrentUser = loggedIn ? email : null;
 }
 document.addEventListener('DOMContentLoaded', function() {
   var ccTab = document.getElementById('tab-clients-collabs');
@@ -642,6 +829,183 @@ function toggleNav(){
 }
 function closeNav(){
   document.getElementById('nav-links').classList.remove('open');
+}
+
+/* ── Haat Bazar ────────────────────────────────────────────── */
+var hbCategory = 'All';
+
+function openHaatBazar() {
+  document.getElementById('hb-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  loadHBAds('All');
+  // reset to listings view
+  document.getElementById('hb-form-view').style.display = 'none';
+  document.getElementById('hb-listings-view').style.display = 'flex';
+  document.getElementById('hb-listings-view').style.flexDirection = 'column';
+  document.getElementById('hb-post-toggle').textContent = 'Post Ad';
+}
+function closeHaatBazar() {
+  document.getElementById('hb-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function toggleHBForm() {
+  var fv = document.getElementById('hb-form-view');
+  var lv = document.getElementById('hb-listings-view');
+  var btn = document.getElementById('hb-post-toggle');
+  var showing = fv.style.display !== 'none';
+  if (showing) {
+    fv.style.display = 'none';
+    lv.style.display = 'flex';
+    btn.textContent = 'Post Ad';
+  } else {
+    fv.style.display = 'block';
+    lv.style.display = 'none';
+    btn.textContent = '\u2190 Back to Ads';
+    document.getElementById('hb-form-msg').textContent = '';
+  }
+}
+function filterHBAds(category, btn) {
+  hbCategory = category;
+  document.querySelectorAll('.hb-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  loadHBAds(category);
+}
+function loadHBAds(category) {
+  var grid = document.getElementById('hb-grid');
+  grid.innerHTML = '<p class="hb-empty">Loading ads\u2026</p>';
+  var url = '/haat-bazar/ads' + (category && category !== 'All' ? '?category=' + encodeURIComponent(category) : '');
+  fetch(url).then(function(r) { return r.json(); }).then(function(ads) {
+    renderHBAds(ads);
+  }).catch(function() {
+    grid.innerHTML = '<p class="hb-empty" style="color:#ef4444">Failed to load ads.</p>';
+  });
+}
+function renderHBAds(ads) {
+  var grid = document.getElementById('hb-grid');
+  if (!ads.length) {
+    grid.innerHTML = '<p class="hb-empty">No ads yet \u2014 be the first to post!</p>';
+    return;
+  }
+  grid.innerHTML = '';
+  ads.forEach(function(ad) {
+    var card = document.createElement('div');
+    card.className = 'hb-card';
+    if (ad.image_filename) {
+      var img = document.createElement('img');
+      img.className = 'hb-card-img';
+      img.src = '/uploads/haat_bazar/' + ad.image_filename;
+      img.alt = 'Ad image';
+      card.appendChild(img);
+    } else {
+      var ph = document.createElement('div');
+      ph.className = 'hb-card-img-placeholder';
+      ph.innerHTML = '<i class="fas fa-image"></i>';
+      card.appendChild(ph);
+    }
+    var body = document.createElement('div');
+    body.className = 'hb-card-body';
+
+    var t = document.createElement('h4'); t.className = 'hb-card-title';
+    t.textContent = ad.title; body.appendChild(t);
+
+    var meta = document.createElement('div'); meta.className = 'hb-card-meta';
+    var cat = document.createElement('span'); cat.className = 'hb-tag';
+    cat.textContent = ad.category; meta.appendChild(cat);
+    if (ad.price) {
+      var pr = document.createElement('span'); pr.className = 'hb-price';
+      pr.textContent = ad.price; meta.appendChild(pr);
+    }
+    body.appendChild(meta);
+
+    if (ad.location) {
+      var loc = document.createElement('p'); loc.className = 'hb-card-loc';
+      loc.textContent = '\uD83D\uDCCD ' + ad.location; body.appendChild(loc);
+    }
+    if (ad.description) {
+      var desc = document.createElement('p'); desc.className = 'hb-card-desc';
+      desc.textContent = ad.description; body.appendChild(desc);
+    }
+
+    var contact = document.createElement('div'); contact.className = 'hb-card-contact';
+    var nm = document.createElement('span'); nm.textContent = '\uD83D\uDC64 ' + ad.contact_name;
+    contact.appendChild(nm);
+    if (ad.contact_phone) {
+      var ph2 = document.createElement('a'); ph2.href = 'tel:' + ad.contact_phone;
+      ph2.textContent = '\uD83D\uDCDE ' + ad.contact_phone; contact.appendChild(ph2);
+    }
+    if (ad.contact_email) {
+      var em = document.createElement('a'); em.href = 'mailto:' + ad.contact_email;
+      em.textContent = '\u2709 ' + ad.contact_email;
+      em.style.fontSize = '.82rem'; contact.appendChild(em);
+    }
+    body.appendChild(contact);
+
+    if (ad.created_at) {
+      var dt = document.createElement('p'); dt.className = 'hb-card-date';
+      dt.textContent = ad.created_at.split(' ')[0]; body.appendChild(dt);
+    }
+    if (hbCurrentUser && ad.posted_by === hbCurrentUser) {
+      var del = document.createElement('button'); del.className = 'hb-del-btn';
+      del.textContent = 'Delete my ad';
+      del.onclick = (function(id) { return function() { deleteHBad(id); }; })(ad.id);
+      body.appendChild(del);
+    }
+    card.appendChild(body);
+    grid.appendChild(card);
+  });
+}
+function submitHBad() {
+  var title    = document.getElementById('hb-title').value.trim();
+  var category = document.getElementById('hb-category').value;
+  var price    = document.getElementById('hb-price').value.trim();
+  var location = document.getElementById('hb-location').value.trim();
+  var desc     = document.getElementById('hb-description').value.trim();
+  var cname    = document.getElementById('hb-contact-name').value.trim();
+  var cphone   = document.getElementById('hb-contact-phone').value.trim();
+  var cemail   = document.getElementById('hb-contact-email').value.trim();
+  var imgFile  = document.getElementById('hb-image').files[0];
+  if (!title || !category || !location || !desc || !cname || !cphone) {
+    setHBMsg('Please fill all required fields.', 'error'); return;
+  }
+  var fd = new FormData();
+  fd.append('title', title); fd.append('category', category);
+  fd.append('price', price); fd.append('location', location);
+  fd.append('description', desc); fd.append('contact_name', cname);
+  fd.append('contact_phone', cphone); fd.append('contact_email', cemail);
+  if (imgFile) fd.append('image', imgFile);
+  setHBMsg('Posting\u2026', '');
+  fetch('/haat-bazar/ads', { method: 'POST', body: fd })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.success) {
+        setHBMsg(d.message, 'success');
+        ['hb-title','hb-price','hb-location','hb-description',
+         'hb-contact-name','hb-contact-phone','hb-contact-email'].forEach(function(id) {
+          document.getElementById(id).value = '';
+        });
+        document.getElementById('hb-category').value = '';
+        document.getElementById('hb-image').value = '';
+        setTimeout(function() {
+          toggleHBForm();
+          hbCategory = 'All';
+          document.querySelectorAll('.hb-filter-btn').forEach(function(b,i) {
+            b.classList.toggle('active', i === 0);
+          });
+          loadHBAds('All');
+        }, 1200);
+      } else { setHBMsg(d.message, 'error'); }
+    }).catch(function() { setHBMsg('Network error. Please try again.', 'error'); });
+}
+function setHBMsg(text, type) {
+  var el = document.getElementById('hb-form-msg');
+  el.textContent = text;
+  el.className = 'hb-form-msg' + (type ? ' hb-msg-' + type : '');
+}
+function deleteHBad(id) {
+  if (!confirm('Delete this ad?')) return;
+  fetch('/haat-bazar/ads/' + id, { method: 'DELETE' })
+    .then(function(r) { return r.json(); })
+    .then(function(d) { if (d.success) loadHBAds(hbCategory); });
 }
 </script>
 
