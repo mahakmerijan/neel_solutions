@@ -319,6 +319,8 @@ textarea.hb-input{resize:vertical}
   <a href="#gallery" onclick="closeNav()">Gallery</a>
   <a href="#learning" onclick="closeNav()">Learning Hub</a>
   <a href="#contact" onclick="closeNav()">Contact</a>
+  <a href="#analytics" onclick="closeNav();showTab('impact','csr',event.target)">CSR</a>
+  <a href="#analytics" onclick="closeNav();showTab('impact','greenlivelihood',event.target)">GLI</a>
   <button class="nav-brochure-btn" onclick="downloadBrochure()" style="margin-left:18px">
     <i class="fas fa-file-pdf"></i> Brochure
   </button>
@@ -340,8 +342,6 @@ textarea.hb-input{resize:vertical}
 <div class="tab-nav" id="impact-tabs">
   <button class="tab-btn active" onclick="showTab('impact','overview',this)">Overview</button>
   <button class="tab-btn" id="tab-clients-collabs" onclick="showTab('impact','clientscollabs',this)">Clients &amp; Collaborations</button>
-  <button class="tab-btn" onclick="showTab('impact','csr',this)">CSR</button>
-  <button class="tab-btn" onclick="showTab('impact','greenlivelihood',this)">Green Livelihood Institute</button>
 </div>
 
 <div class="tab-content" data-group="impact" id="impact-overview">
