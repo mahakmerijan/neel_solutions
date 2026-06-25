@@ -17,6 +17,11 @@ app.config["MAIL_DEFAULT_SENDER"] = os.environ.get("MAIL_SENDER") or os.environ.
 MAIL_ENABLED = bool(os.environ.get("MAIL_USERNAME"))
 mail = Mail(app) if MAIL_ENABLED else None
 
+# ── Admin credentials ─────────────────────────────────────────
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "NeelAdmin@2026")
+ADMIN_EMAIL    = os.environ.get("ADMIN_EMAIL")  # where to send new-registration notifications
+
 # ── Database ──────────────────────────────────────────────────
 DB_PATH = os.path.join(os.path.dirname(__file__), "users.db")
 
@@ -36,9 +41,10 @@ def init_db():
     conn.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id            INTEGER PRIMARY KEY AUTOINCREMENT,
+            name          TEXT,
             email         TEXT UNIQUE NOT NULL,
             password_hash TEXT NOT NULL,
-            verified      INTEGER DEFAULT 0
+            approved      INTEGER DEFAULT 0
         )
     """)
     conn.execute("""
@@ -58,6 +64,16 @@ def init_db():
         )
     """)
     conn.commit()
+    # Migration: add columns if they don't exist in older databases
+    for migration in [
+        "ALTER TABLE users ADD COLUMN name TEXT",
+        "ALTER TABLE users ADD COLUMN approved INTEGER DEFAULT 0",
+    ]:
+        try:
+            conn.execute(migration)
+            conn.commit()
+        except Exception:
+            pass
     conn.close()
 
 init_db()
@@ -79,6 +95,48 @@ def _send_otp(email, otp, subject):
     )
     mail.send(msg)
 
+def _send_admin_notification(user_email, name):
+    """Notify admin when a new user registers."""
+    if not MAIL_ENABLED or mail is None or not ADMIN_EMAIL:
+        return
+    try:
+        msg = Message(
+            "NEEL Solutions – New Registration Pending Approval",
+            recipients=[ADMIN_EMAIL]
+        )
+        msg.body = (
+            f"A new user has registered and is awaiting your approval.\n\n"
+            f"Name:  {name or '(not provided)'}\n"
+            f"Email: {user_email}\n\n"
+            f"Please log in to the Admin Panel to approve or reject this request.\n\n"
+            f"– NEEL Solutions System"
+        )
+        mail.send(msg)
+    except Exception as e:
+        print(f"[ERROR] Failed to send admin notification: {e}")
+
+def _send_approval_email(user_email, name):
+    """Send approval confirmation to the user."""
+    if not MAIL_ENABLED or mail is None:
+        return
+    site_url = os.environ.get("SITE_URL", "")
+    try:
+        msg = Message(
+            "Your NEEL Solutions Account Has Been Approved!",
+            recipients=[user_email]
+        )
+        msg.body = (
+            f"Dear {name or user_email},\n\n"
+            f"Great news! Your NEEL Solutions account has been approved.\n\n"
+            f"You can now log in to your account"
+            + (f" at: {site_url}" if site_url else "") + ".\n\n"
+            f"Welcome aboard!\n\n"
+            f"– NEEL Solutions Team"
+        )
+        mail.send(msg)
+    except Exception as e:
+        print(f"[ERROR] Failed to send approval email: {e}")
+
 # ── Routes ────────────────────────────────────────────────────
 @app.route("/")
 def index():
@@ -93,6 +151,7 @@ def check_auth():
 @app.route("/register", methods=["POST"])
 def register():
     data     = request.get_json() or {}
+    name     = (data.get("name") or "").strip()
     email    = (data.get("email") or "").strip().lower()
     password = data.get("password") or ""
     if not email or "@" not in email:
@@ -100,22 +159,25 @@ def register():
     if len(password) < 6:
         return jsonify({"success": False, "message": "Password must be at least 6 characters."}), 400
     conn     = get_db()
-    existing = conn.execute("SELECT id FROM users WHERE email=?", (email,)).fetchone()
+    existing = conn.execute("SELECT id, approved FROM users WHERE email=?", (email,)).fetchone()
     conn.close()
     if existing:
+        if existing["approved"] == 0:
+            return jsonify({"success": False, "message": "Your registration is already pending approval. Please wait for the approval email."}), 409
         return jsonify({"success": False, "message": "This email is already registered."}), 409
     conn = get_db()
     try:
         conn.execute(
-            "INSERT INTO users (email, password_hash, verified) VALUES (?,?,1)",
-            (email, generate_password_hash(password))
+            "INSERT INTO users (name, email, password_hash, approved) VALUES (?,?,?,0)",
+            (name, email, generate_password_hash(password))
         )
         conn.commit()
     except Exception:
         conn.close()
         return jsonify({"success": False, "message": "Registration failed. Please try again."}), 500
     conn.close()
-    return jsonify({"success": True, "message": "Account created! You can now log in."})
+    _send_admin_notification(email, name)
+    return jsonify({"success": True, "message": "Registration submitted! Your account is pending admin approval. You'll receive an email once it's activated."})
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -127,6 +189,8 @@ def login():
     conn.close()
     if not user or not check_password_hash(user["password_hash"], password):
         return jsonify({"success": False, "message": "Invalid email or password."}), 401
+    if not user["approved"]:
+        return jsonify({"success": False, "message": "⏳ Your account is pending admin approval. You'll receive an email once it's activated."}), 403
     session["user_email"] = email
     return jsonify({"success": True, "message": "Logged in successfully.", "email": email})
 
@@ -262,6 +326,74 @@ def delete_haat_bazar_ad(ad_id):
 @app.route("/uploads/haat_bazar/<filename>")
 def serve_haat_bazar_upload(filename):
     return send_from_directory(UPLOAD_FOLDER, secure_filename(filename))
+
+# ── Admin API ─────────────────────────────────────────────────
+def _require_admin():
+    if not session.get("admin_logged_in"):
+        return jsonify({"success": False, "message": "Unauthorized."}), 401
+    return None
+
+@app.route("/admin/login", methods=["POST"])
+def admin_login():
+    data     = request.get_json() or {}
+    username = (data.get("username") or "").strip()
+    password = data.get("password") or ""
+    if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+        session["admin_logged_in"] = True
+        return jsonify({"success": True})
+    return jsonify({"success": False, "message": "Invalid admin credentials."}), 401
+
+@app.route("/admin/logout", methods=["POST"])
+def admin_logout():
+    session.pop("admin_logged_in", None)
+    return jsonify({"success": True})
+
+@app.route("/admin/check")
+def admin_check():
+    return jsonify({"admin": bool(session.get("admin_logged_in"))})
+
+@app.route("/admin/pending-users")
+def admin_pending_users():
+    err = _require_admin()
+    if err:
+        return err
+    conn  = get_db()
+    users = conn.execute(
+        "SELECT id, name, email FROM users WHERE approved=0 ORDER BY id ASC"
+    ).fetchall()
+    conn.close()
+    return jsonify([dict(u) for u in users])
+
+@app.route("/admin/approve/<int:user_id>", methods=["POST"])
+def admin_approve_user(user_id):
+    err = _require_admin()
+    if err:
+        return err
+    conn = get_db()
+    user = conn.execute("SELECT * FROM users WHERE id=? AND approved=0", (user_id,)).fetchone()
+    if not user:
+        conn.close()
+        return jsonify({"success": False, "message": "User not found in pending list."}), 404
+    conn.execute("UPDATE users SET approved=1 WHERE id=?", (user_id,))
+    conn.commit()
+    conn.close()
+    _send_approval_email(user["email"], user["name"] or user["email"])
+    return jsonify({"success": True, "message": f"User {user['email']} approved."})
+
+@app.route("/admin/reject/<int:user_id>", methods=["POST"])
+def admin_reject_user(user_id):
+    err = _require_admin()
+    if err:
+        return err
+    conn = get_db()
+    user = conn.execute("SELECT * FROM users WHERE id=? AND approved=0", (user_id,)).fetchone()
+    if not user:
+        conn.close()
+        return jsonify({"success": False, "message": "User not found in pending list."}), 404
+    conn.execute("DELETE FROM users WHERE id=?", (user_id,))
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True, "message": f"Registration rejected for {user['email']}."})
 
 if __name__ == "__main__":
     app.run()

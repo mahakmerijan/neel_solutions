@@ -276,6 +276,59 @@ textarea.hb-input{resize:vertical}
 .hb-cancel-btn:hover{background:#e5e7eb}
 .hb-form-msg{margin-top:12px;font-size:.88rem;min-height:18px}
 .hb-msg-error{color:#dc2626}.hb-msg-success{color:#059669}
+
+/* ── Admin nav button ────────────────────────────────── */
+.btn-admin-nav{background:transparent;border:1.5px dashed rgba(255,255,255,.6);
+  color:white;padding:7px 14px;border-radius:20px;cursor:pointer;font-weight:bold;
+  font-size:.78rem;transition:all .2s;white-space:nowrap}
+.btn-admin-nav:hover{background:rgba(255,255,255,.12);border-color:white}
+/* ── Admin panel overlay ──────────────────────────── */
+.admin-overlay{display:none;position:fixed;inset:0;background:#f0f4f8;z-index:20001;
+  overflow-y:auto;flex-direction:column}
+.admin-overlay.open{display:flex}
+.admin-panel-header{background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 55%,#581c87 100%);
+  padding:18px 32px;display:flex;align-items:center;justify-content:space-between;
+  position:sticky;top:0;z-index:10;box-shadow:0 4px 20px rgba(0,0,0,.3);flex-shrink:0}
+.admin-panel-header h2{color:#fff;font-size:1.3rem;margin:0;display:flex;align-items:center;gap:10px}
+.admin-badge{background:linear-gradient(135deg,#ea580c,#fb923c);color:#fff;
+  font-size:.65rem;font-weight:700;letter-spacing:1.5px;padding:3px 10px;
+  border-radius:20px;text-transform:uppercase}
+.btn-admin-panel-logout{padding:8px 18px;border:1.5px solid rgba(255,255,255,.4);
+  border-radius:8px;background:transparent;color:#fff;font-size:.82rem;font-weight:600;
+  cursor:pointer;transition:all .2s}
+.btn-admin-panel-logout:hover{background:rgba(255,0,0,.2);border-color:rgba(255,100,100,.5)}
+.admin-panel-content{max-width:1000px;margin:0 auto;padding:32px;flex:1;width:100%}
+.admin-section-title{font-size:1.3rem;font-weight:700;color:#1e3a8a;margin-bottom:4px;
+  display:flex;align-items:center;gap:8px}
+.admin-section-sub{font-size:.88rem;color:#6b7280;margin-bottom:24px}
+.pending-wrap{background:white;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);overflow:hidden}
+.pending-table-head{display:grid;grid-template-columns:1fr 1.6fr auto auto;gap:12px;
+  padding:12px 20px;background:#f8fafd;border-bottom:1px solid #e8eef5;
+  font-size:.73rem;font-weight:700;color:#6b7280;letter-spacing:.5px;text-transform:uppercase}
+.pending-row{display:grid;grid-template-columns:1fr 1.6fr auto auto;gap:12px;
+  padding:14px 20px;border-bottom:1px solid #f0f4f8;align-items:center}
+.pending-row:last-child{border-bottom:none}
+.pending-row:hover{background:#fbfcff}
+.pending-name{font-size:.9rem;font-weight:600;color:#1e3a8a}
+.pending-email{font-size:.84rem;color:#374151}
+.pending-count-badge{display:inline-flex;align-items:center;justify-content:center;
+  background:#ea580c;color:#fff;border-radius:50%;min-width:20px;height:20px;
+  font-size:.68rem;font-weight:700;padding:0 4px}
+.btn-approve{padding:7px 16px;background:linear-gradient(135deg,#059669,#34d399);
+  border:none;border-radius:8px;color:#fff;font-size:.8rem;font-weight:600;
+  cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn-approve:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-reject{padding:7px 16px;background:linear-gradient(135deg,#b91c1c,#f87171);
+  border:none;border-radius:8px;color:#fff;font-size:.8rem;font-weight:600;
+  cursor:pointer;transition:all .2s;white-space:nowrap}
+.btn-reject:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.admin-empty{text-align:center;padding:60px 32px;color:#6b7280}
+.admin-empty-icon{font-size:3rem;margin-bottom:14px}
+.admin-alert{padding:10px 16px;border-radius:8px;font-size:.85rem;font-weight:500;
+  margin-bottom:18px;display:none}
+.admin-alert.show{display:block}
+.admin-alert.ok{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7}
+.admin-alert.err{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5}
 @media(max-width:768px){
   .hb-overlay{padding:0}
   .hb-modal{border-radius:0;max-height:100vh}
@@ -301,6 +354,7 @@ textarea.hb-input{resize:vertical}
   <div id="nav-auth-btns" style="display:flex;gap:8px;align-items:center">
     <button class="auth-nav-btn register-btn" onclick="openAuthModal('panel-register')">Register</button>
     <button class="auth-nav-btn login-btn" onclick="openAuthModal('panel-login')">Login</button>
+    <button class="auth-nav-btn btn-admin-nav" onclick="openAdminLogin()">Admin</button>
   </div>
   <div id="nav-user-info" style="display:none;align-items:center;gap:8px">
     <span id="nav-user-email" class="nav-user-email"></span>
@@ -611,6 +665,7 @@ textarea.hb-input{resize:vertical}
     <!-- Register -->
     <div id="panel-register" style="display:none">
       <h3 class="auth-title">Create Account</h3>
+      <input class="auth-field" id="reg-name" type="text" placeholder="Full name" autocomplete="name">
       <input class="auth-field" id="reg-email" type="email" placeholder="Email address" autocomplete="email">
       <input class="auth-field" id="reg-password" type="password" placeholder="Password (min 6 characters)" autocomplete="new-password">
       <input class="auth-field" id="reg-confirm" type="password" placeholder="Confirm password" autocomplete="new-password">
@@ -650,19 +705,53 @@ textarea.hb-input{resize:vertical}
       <button class="auth-submit" onclick="doResetPW()">Reset Password</button>
       <div class="auth-msg" id="new-pw-msg"></div>
     </div>
+
+    <!-- Admin Login Panel -->
+    <div id="panel-admin" style="display:none">
+      <h3 class="auth-title">⚙️ Admin Login</h3>
+      <p class="auth-hint">Restricted access — NEEL Solutions administrators only</p>
+      <input class="auth-field" id="admin-username" type="text" placeholder="Admin username" autocomplete="off">
+      <input class="auth-field" id="admin-password" type="password" placeholder="Admin password" autocomplete="off">
+      <button class="auth-submit" onclick="doAdminLogin()">Enter Admin Panel</button>
+      <div class="auth-msg" id="admin-msg"></div>
+      <div class="auth-links">
+        <button class="auth-link" onclick="showPanel('panel-login')">&#8592; Back to Login</button>
+      </div>
+    </div>
   </div>
 </div>
 
 <footer>
 © 2026 NEEL Solutions | Sustainable Livelihoods • Innovation • Technology • Research
+<br><button style="background:none;border:none;color:rgba(255,255,255,.35);font-size:.75rem;
+cursor:pointer;margin-top:8px;text-decoration:underline" onclick="openAdminLogin()">Admin Access</button>
 </footer>
+
+<!-- ── Admin Panel Overlay ─────────────────────────────────── -->
+<div class="admin-overlay" id="admin-panel-overlay">
+  <div class="admin-panel-header">
+    <h2>⚙️ Admin Panel <span class="admin-badge">Administrator</span></h2>
+    <div style="display:flex;align-items:center;gap:12px">
+      <span style="color:rgba(255,255,255,.65);font-size:.82rem">NEEL Solutions</span>
+      <button class="btn-admin-panel-logout" onclick="doAdminLogout()">Log Out</button>
+    </div>
+  </div>
+  <div class="admin-panel-content">
+    <div class="admin-section-title">&#128101; Pending User Approvals
+      <span class="pending-count-badge" id="pending-count-badge" style="display:none">0</span>
+    </div>
+    <div class="admin-section-sub">Review new registrations and approve or reject them. Approved users automatically receive a confirmation email.</div>
+    <div class="admin-alert" id="admin-users-alert"></div>
+    <div class="pending-wrap" id="pending-users-wrap"></div>
+  </div>
+</div>
 
 <!-- html2pdf for brochure download -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <script>
 /* ── Auth ──────────────────────────────────────────────────── */
 var AUTH_PANELS = ['panel-login','panel-register',
-                   'panel-forgot','panel-otp-reset','panel-new-pw'];
+                   'panel-forgot','panel-otp-reset','panel-new-pw','panel-admin'];
 var hbCurrentUser = null;
 function showPanel(id) {
   AUTH_PANELS.forEach(function(p) {
@@ -717,16 +806,19 @@ function setMsg(id, text, type) {
   el.className = 'auth-msg' + (type ? ' ' + type : '');
 }
 function doRegister() {
+  var name  = document.getElementById('reg-name').value.trim();
   var email = document.getElementById('reg-email').value.trim();
   var pw    = document.getElementById('reg-password').value;
   var pw2   = document.getElementById('reg-confirm').value;
   if (!email || !pw) return setMsg('reg-msg','Please fill all fields.','error');
   if (pw !== pw2)    return setMsg('reg-msg','Passwords do not match.','error');
   if (pw.length < 6) return setMsg('reg-msg','Password must be at least 6 characters.','error');
-  setMsg('reg-msg','Creating account...','');
-  apiPost('/register',{email:email,password:pw}).then(function(d){
-    if (d.success){setMsg('reg-msg',d.message,'success');setTimeout(function(){showPanel('panel-login');},1500);}
-    else setMsg('reg-msg',d.message,'error');
+  setMsg('reg-msg','Submitting registration...','');
+  apiPost('/register',{name:name,email:email,password:pw}).then(function(d){
+    if (d.success){
+      setMsg('reg-msg',d.message,'success');
+      // Do NOT auto-redirect to login since user must wait for approval
+    } else setMsg('reg-msg',d.message,'error');
   }).catch(function(){setMsg('reg-msg','Network error. Please try again.','error');});
 }
 function doLogin() {
@@ -771,6 +863,94 @@ function doResetPW() {
       setMsg('new-pw-msg',d.message,'success');
       setTimeout(function(){closeAuthModal();showPanel('panel-login');},1800);
     } else setMsg('new-pw-msg',d.message,'error');
+  });
+}
+
+/* ── Admin ────────────────────────────────────────── */
+function openAdminLogin() {
+  closeAuthModal();
+  showPanel('panel-admin');
+  document.getElementById('auth-overlay').classList.add('open');
+}
+function doAdminLogin() {
+  var u = document.getElementById('admin-username').value.trim();
+  var p = document.getElementById('admin-password').value;
+  if (!u || !p) return setMsg('admin-msg','Please enter username and password.','error');
+  setMsg('admin-msg','Verifying...','');
+  apiPost('/admin/login', {username: u, password: p}).then(function(d) {
+    if (d.success) {
+      closeAuthModal();
+      openAdminPanel();
+    } else {
+      setMsg('admin-msg', d.message || 'Invalid credentials.', 'error');
+    }
+  }).catch(function() { setMsg('admin-msg','Network error.','error'); });
+}
+function doAdminLogout() {
+  apiPost('/admin/logout', {}).then(function() {
+    document.getElementById('admin-panel-overlay').classList.remove('open');
+  });
+}
+function openAdminPanel() {
+  fetch('/admin/check').then(function(r){ return r.json(); }).then(function(d) {
+    if (!d.admin) { openAdminLogin(); return; }
+    document.getElementById('admin-panel-overlay').classList.add('open');
+    renderPendingUsers();
+  });
+}
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function renderPendingUsers() {
+  var wrap  = document.getElementById('pending-users-wrap');
+  var badge = document.getElementById('pending-count-badge');
+  var alert = document.getElementById('admin-users-alert');
+  alert.className = 'admin-alert';
+  wrap.innerHTML = '<p style="padding:20px;color:#6b7280">Loading...</p>';
+  fetch('/admin/pending-users').then(function(r){ return r.json(); }).then(function(users) {
+    badge.style.display = users.length ? 'inline-flex' : 'none';
+    badge.textContent   = users.length;
+    if (!users.length) {
+      wrap.innerHTML = '<div class="admin-empty"><div class="admin-empty-icon">✅</div><p>No pending approvals. All registrations have been reviewed.</p></div>';
+      return;
+    }
+    var html = '<div class="pending-table-head"><span>Name</span><span>Email</span><span></span><span></span></div>';
+    users.forEach(function(u) {
+      html += '<div class="pending-row">' +
+        '<div class="pending-name">' + escHtml(u.name || '—') + '</div>' +
+        '<div class="pending-email">' + escHtml(u.email) + '</div>' +
+        '<button class="btn-approve" onclick="approveUser(' + u.id + ',\'' + escHtml(u.email) + '\')">&#10003; Approve</button>' +
+        '<button class="btn-reject"  onclick="rejectUser(' + u.id + ',\'' + escHtml(u.email) + '\')">&#10005; Reject</button>' +
+        '</div>';
+    });
+    wrap.innerHTML = html;
+  }).catch(function() {
+    wrap.innerHTML = '<div class="admin-empty"><p style="color:#dc2626">Failed to load pending users.</p></div>';
+  });
+}
+function approveUser(id, email) {
+  var alert = document.getElementById('admin-users-alert');
+  fetch('/admin/approve/' + id, {method:'POST'}).then(function(r){ return r.json(); }).then(function(d) {
+    alert.textContent = d.message;
+    alert.className   = 'admin-alert show ' + (d.success ? 'ok' : 'err');
+    if (d.success) renderPendingUsers();
+  }).catch(function() {
+    alert.textContent = 'Network error.';
+    alert.className   = 'admin-alert show err';
+  });
+}
+function rejectUser(id, email) {
+  if (!confirm('Reject and delete the registration for ' + email + '?\nThis cannot be undone.')) return;
+  var alert = document.getElementById('admin-users-alert');
+  fetch('/admin/reject/' + id, {method:'POST'}).then(function(r){ return r.json(); }).then(function(d) {
+    alert.textContent = d.message;
+    alert.className   = 'admin-alert show ' + (d.success ? 'ok' : 'err');
+    if (d.success) renderPendingUsers();
+  }).catch(function() {
+    alert.textContent = 'Network error.';
+    alert.className   = 'admin-alert show err';
   });
 }
 
