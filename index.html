@@ -968,7 +968,7 @@ function sendApprovalEmailClient(toEmail, toName, loginUrl) {
   var alert = document.getElementById('admin-users-alert');
   try {
     emailjs.init({ publicKey: '8RVJ1Y6zL-VvkLeE1' });
-    emailjs.send('service_9ko6lao', 'template_gvp6exk', {
+    emailjs.send('service_9ko6lao', 'template_neel_approved', {
       to_name: toName || toEmail,
       to_email: toEmail,
       login_url: loginUrl || window.location.origin,
