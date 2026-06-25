@@ -22,7 +22,7 @@ mail = Mail(app) if MAIL_ENABLED else None
 
 # ── EmailJS (optional) ───────────────────────────────────────
 EMAILJS_SERVICE_ID           = os.environ.get("EMAILJS_SERVICE_ID", "service_9ko6lao")
-EMAILJS_APPROVAL_TEMPLATE_ID = os.environ.get("EMAILJS_APPROVAL_TEMPLATE_ID", "template_gvp6exk")
+EMAILJS_APPROVAL_TEMPLATE_ID = os.environ.get("EMAILJS_APPROVAL_TEMPLATE_ID", "template_8dv54iv")
 EMAILJS_PUBLIC_KEY           = os.environ.get("EMAILJS_PUBLIC_KEY", "8RVJ1Y6zL-VvkLeE1")
 EMAILJS_PRIVATE_KEY          = os.environ.get("EMAILJS_PRIVATE_KEY")
 
