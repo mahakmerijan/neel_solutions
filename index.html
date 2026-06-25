@@ -43,6 +43,8 @@ box-shadow:0 5px 18px rgba(0,0,0,.08)}
 .lms-link-btn:hover{color:#1d4ed8;text-decoration:underline}
 
 footer{background:#111827;color:white;text-align:center;padding:30px}
+.admin-access-btn{background:none;border:none;color:rgba(255,255,255,.35);font-size:.75rem;
+  cursor:pointer;margin-top:8px;text-decoration:underline}
 .hero-btn{background:#f59e0b;color:white;padding:12px 25px;
 border-radius:25px;text-decoration:none;display:inline-block;margin-top:20px}
 
@@ -149,6 +151,17 @@ box-shadow:0 5px 18px rgba(0,0,0,.12)}
   .tab-btn{padding:8px 14px;font-size:.82rem}
 
   footer{padding:20px 16px;font-size:.85rem}
+
+  /* Keep admin entry point visible on mobile. */
+  .admin-access-btn{
+    position:fixed;right:14px;bottom:14px;z-index:10001;
+    margin-top:0;padding:10px 14px;border-radius:999px;
+    background:#1d4ed8;color:#fff;font-size:.82rem;font-weight:700;
+    text-decoration:none;box-shadow:0 6px 16px rgba(0,0,0,.3)
+  }
+
+  /* Prevent footer text from being covered by the floating button. */
+  footer{padding-bottom:76px}
 }
 
 @media(max-width:400px){
@@ -723,8 +736,7 @@ textarea.hb-input{resize:vertical}
 
 <footer>
 © 2026 NEEL Solutions | Sustainable Livelihoods • Innovation • Technology • Research
-<br><button style="background:none;border:none;color:rgba(255,255,255,.35);font-size:.75rem;
-cursor:pointer;margin-top:8px;text-decoration:underline" onclick="openAdminLogin()">Admin Access</button>
+<br><button class="admin-access-btn" onclick="openAdminLogin()">Admin Access</button>
 </footer>
 
 <!-- ── Admin Panel Overlay ─────────────────────────────────── -->
