@@ -789,15 +789,29 @@ document.addEventListener('DOMContentLoaded', function() {
   var taBtn = document.getElementById('btn-team-advisors');
   if (ccTab) ccTab.style.display = 'none';
   if (taBtn) taBtn.style.display = 'none';
-  fetch('/check-auth').then(function(r){ return r.json(); }).then(function(d) {
+  apiGet('/check-auth').then(function(d) {
     if (d.logged_in) setAuthState(true, d.email);
+  }).catch(function(){});
+  // Keep admin panel open after page reload if admin session is still active.
+  apiGet('/admin/check').then(function(d) {
+    if (d.admin && sessionStorage.getItem('neel_admin_panel_open') === '1') {
+      openAdminPanel();
+    }
   }).catch(function(){});
 });
 function apiPost(url, body) {
   return fetch(url, {
     method: 'POST',
+    credentials: 'same-origin',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(body)
+  }).then(function(r){ return r.json(); });
+}
+function apiGet(url) {
+  return fetch(url, {
+    method: 'GET',
+    credentials: 'same-origin',
+    cache: 'no-store'
   }).then(function(r){ return r.json(); });
 }
 function setMsg(id, text, type) {
@@ -888,12 +902,14 @@ function doAdminLogin() {
 }
 function doAdminLogout() {
   apiPost('/admin/logout', {}).then(function() {
+    sessionStorage.removeItem('neel_admin_panel_open');
     document.getElementById('admin-panel-overlay').classList.remove('open');
   });
 }
 function openAdminPanel() {
-  fetch('/admin/check').then(function(r){ return r.json(); }).then(function(d) {
+  apiGet('/admin/check').then(function(d) {
     if (!d.admin) { openAdminLogin(); return; }
+    sessionStorage.setItem('neel_admin_panel_open', '1');
     document.getElementById('admin-panel-overlay').classList.add('open');
     renderPendingUsers();
   });
@@ -909,7 +925,8 @@ function renderPendingUsers() {
   var alert = document.getElementById('admin-users-alert');
   alert.className = 'admin-alert';
   wrap.innerHTML = '<p style="padding:20px;color:#6b7280">Loading...</p>';
-  fetch('/admin/pending-users').then(function(r){ return r.json(); }).then(function(users) {
+  apiGet('/admin/pending-users').then(function(users) {
+    if (!Array.isArray(users)) throw new Error('Unexpected response');
     badge.style.display = users.length ? 'inline-flex' : 'none';
     badge.textContent   = users.length;
     if (!users.length) {
@@ -921,8 +938,8 @@ function renderPendingUsers() {
       html += '<div class="pending-row">' +
         '<div class="pending-name">' + escHtml(u.name || '—') + '</div>' +
         '<div class="pending-email">' + escHtml(u.email) + '</div>' +
-        '<button class="btn-approve" onclick="approveUser(' + u.id + ',\'' + escHtml(u.email) + '\')">&#10003; Approve</button>' +
-        '<button class="btn-reject"  onclick="rejectUser(' + u.id + ',\'' + escHtml(u.email) + '\')">&#10005; Reject</button>' +
+        '<button class="btn-approve" onclick="approveUser(' + u.id + ')">&#10003; Approve</button>' +
+        '<button class="btn-reject"  onclick="rejectUser(' + u.id + ')">&#10005; Reject</button>' +
         '</div>';
     });
     wrap.innerHTML = html;
@@ -930,9 +947,9 @@ function renderPendingUsers() {
     wrap.innerHTML = '<div class="admin-empty"><p style="color:#dc2626">Failed to load pending users.</p></div>';
   });
 }
-function approveUser(id, email) {
+function approveUser(id) {
   var alert = document.getElementById('admin-users-alert');
-  fetch('/admin/approve/' + id, {method:'POST'}).then(function(r){ return r.json(); }).then(function(d) {
+  fetch('/admin/approve/' + id, {method:'POST', credentials:'same-origin'}).then(function(r){ return r.json(); }).then(function(d) {
     alert.textContent = d.message;
     alert.className   = 'admin-alert show ' + (d.success ? 'ok' : 'err');
     if (d.success) renderPendingUsers();
@@ -941,10 +958,10 @@ function approveUser(id, email) {
     alert.className   = 'admin-alert show err';
   });
 }
-function rejectUser(id, email) {
-  if (!confirm('Reject and delete the registration for ' + email + '?\nThis cannot be undone.')) return;
+function rejectUser(id) {
+  if (!confirm('Reject and delete this registration?\nThis cannot be undone.')) return;
   var alert = document.getElementById('admin-users-alert');
-  fetch('/admin/reject/' + id, {method:'POST'}).then(function(r){ return r.json(); }).then(function(d) {
+  fetch('/admin/reject/' + id, {method:'POST', credentials:'same-origin'}).then(function(r){ return r.json(); }).then(function(d) {
     alert.textContent = d.message;
     alert.className   = 'admin-alert show ' + (d.success ? 'ok' : 'err');
     if (d.success) renderPendingUsers();
