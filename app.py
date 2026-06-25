@@ -1,4 +1,4 @@
-import os, random, time, sqlite3, uuid
+import os, random, time, sqlite3, uuid, threading
 from flask import Flask, send_from_directory, request, jsonify, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -14,6 +14,7 @@ app.config["MAIL_USE_TLS"]        = os.environ.get("MAIL_USE_TLS",  "true").lowe
 app.config["MAIL_USERNAME"]       = os.environ.get("MAIL_USERNAME")
 app.config["MAIL_PASSWORD"]       = os.environ.get("MAIL_PASSWORD")
 app.config["MAIL_DEFAULT_SENDER"] = os.environ.get("MAIL_SENDER") or os.environ.get("MAIL_USERNAME")
+app.config["MAIL_TIMEOUT"]        = int(os.environ.get("MAIL_TIMEOUT", 10))
 MAIL_ENABLED = bool(os.environ.get("MAIL_USERNAME"))
 mail = Mail(app) if MAIL_ENABLED else None
 
@@ -137,6 +138,16 @@ def _send_approval_email(user_email, name):
     except Exception as e:
         print(f"[ERROR] Failed to send approval email: {e}")
 
+def _send_email_async(fn, *args):
+    """Run email send in background so API responses do not block on SMTP."""
+    def runner():
+        try:
+            with app.app_context():
+                fn(*args)
+        except Exception as e:
+            print(f"[ERROR] Background email job failed: {e}")
+    threading.Thread(target=runner, daemon=True).start()
+
 # ── Routes ────────────────────────────────────────────────────
 @app.route("/")
 def index():
@@ -176,7 +187,7 @@ def register():
         conn.close()
         return jsonify({"success": False, "message": "Registration failed. Please try again."}), 500
     conn.close()
-    _send_admin_notification(email, name)
+    _send_email_async(_send_admin_notification, email, name)
     return jsonify({"success": True, "message": "Registration submitted! Your account is pending admin approval. You'll receive an email once it's activated."})
 
 @app.route("/login", methods=["POST"])
@@ -377,7 +388,7 @@ def admin_approve_user(user_id):
     conn.execute("UPDATE users SET approved=1 WHERE id=?", (user_id,))
     conn.commit()
     conn.close()
-    _send_approval_email(user["email"], user["name"] or user["email"])
+    _send_email_async(_send_approval_email, user["email"], user["name"] or user["email"])
     return jsonify({"success": True, "message": f"User {user['email']} approved."})
 
 @app.route("/admin/reject/<int:user_id>", methods=["POST"])
