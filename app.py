@@ -1,4 +1,6 @@
-import os, random, time, sqlite3, uuid, threading
+import os, random, time, sqlite3, uuid, threading, json
+from urllib import request as urlrequest
+from urllib.error import URLError, HTTPError
 from flask import Flask, send_from_directory, request, jsonify, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -17,6 +19,12 @@ app.config["MAIL_DEFAULT_SENDER"] = os.environ.get("MAIL_SENDER") or os.environ.
 app.config["MAIL_TIMEOUT"]        = int(os.environ.get("MAIL_TIMEOUT", 10))
 MAIL_ENABLED = bool(os.environ.get("MAIL_USERNAME"))
 mail = Mail(app) if MAIL_ENABLED else None
+
+# ── EmailJS (optional) ───────────────────────────────────────
+EMAILJS_SERVICE_ID           = os.environ.get("EMAILJS_SERVICE_ID", "service_9ko6lao")
+EMAILJS_APPROVAL_TEMPLATE_ID = os.environ.get("EMAILJS_APPROVAL_TEMPLATE_ID", "template_gvp6exk")
+EMAILJS_PUBLIC_KEY           = os.environ.get("EMAILJS_PUBLIC_KEY", "8RVJ1Y6zL-VvkLeE1")
+EMAILJS_PRIVATE_KEY          = os.environ.get("EMAILJS_PRIVATE_KEY")
 
 # ── Admin credentials ─────────────────────────────────────────
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
@@ -118,25 +126,59 @@ def _send_admin_notification(user_email, name):
 
 def _send_approval_email(user_email, name):
     """Send approval confirmation to the user."""
-    if not MAIL_ENABLED or mail is None:
-        return
     site_url = os.environ.get("SITE_URL", "")
-    try:
-        msg = Message(
-            "Your NEEL Solutions Account Has Been Approved!",
-            recipients=[user_email]
-        )
-        msg.body = (
-            f"Dear {name or user_email},\n\n"
-            f"Great news! Your NEEL Solutions account has been approved.\n\n"
-            f"You can now log in to your account"
-            + (f" at: {site_url}" if site_url else "") + ".\n\n"
-            f"Welcome aboard!\n\n"
-            f"– NEEL Solutions Team"
-        )
-        mail.send(msg)
-    except Exception as e:
-        print(f"[ERROR] Failed to send approval email: {e}")
+
+    # First preference: EmailJS API (if private key is configured).
+    if EMAILJS_PRIVATE_KEY:
+        try:
+            payload = {
+                "service_id": EMAILJS_SERVICE_ID,
+                "template_id": EMAILJS_APPROVAL_TEMPLATE_ID,
+                "user_id": EMAILJS_PUBLIC_KEY,
+                "accessToken": EMAILJS_PRIVATE_KEY,
+                "template_params": {
+                    "to_name": name or user_email,
+                    "to_email": user_email,
+                    "login_url": site_url,
+                    "user_email": user_email,
+                    "site_name": "NEEL Solutions"
+                }
+            }
+            req = urlrequest.Request(
+                "https://api.emailjs.com/api/v1.0/email/send",
+                data=json.dumps(payload).encode("utf-8"),
+                headers={"Content-Type": "application/json"},
+                method="POST"
+            )
+            with urlrequest.urlopen(req, timeout=10) as resp:
+                _ = resp.read().decode("utf-8", errors="ignore")
+                if resp.status >= 400:
+                    raise RuntimeError(f"EmailJS failed with status {resp.status}")
+            return
+        except (HTTPError, URLError, Exception) as e:
+            print(f"[ERROR] EmailJS approval mail failed: {e}")
+
+    # Fallback: SMTP via Flask-Mail.
+    if MAIL_ENABLED and mail is not None:
+        try:
+            msg = Message(
+                "Your NEEL Solutions Account Has Been Approved!",
+                recipients=[user_email]
+            )
+            msg.body = (
+                f"Dear {name or user_email},\n\n"
+                f"Great news! Your NEEL Solutions account has been approved.\n\n"
+                f"You can now log in to your account"
+                + (f" at: {site_url}" if site_url else "") + ".\n\n"
+                f"Welcome aboard!\n\n"
+                f"– NEEL Solutions Team"
+            )
+            mail.send(msg)
+            return
+        except Exception as e:
+            print(f"[ERROR] SMTP approval mail failed: {e}")
+
+    print("[WARN] Approval email not sent: neither EmailJS nor SMTP is fully configured.")
 
 def _send_email_async(fn, *args):
     """Run email send in background so API responses do not block on SMTP."""
