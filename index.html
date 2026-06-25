@@ -748,6 +748,7 @@ cursor:pointer;margin-top:8px;text-decoration:underline" onclick="openAdminLogin
 
 <!-- html2pdf for brochure download -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
 /* ── Auth ──────────────────────────────────────────────────── */
 var AUTH_PANELS = ['panel-login','panel-register',
@@ -952,11 +953,39 @@ function approveUser(id) {
   fetch('/admin/approve/' + id, {method:'POST', credentials:'same-origin'}).then(function(r){ return r.json(); }).then(function(d) {
     alert.textContent = d.message;
     alert.className   = 'admin-alert show ' + (d.success ? 'ok' : 'err');
-    if (d.success) renderPendingUsers();
+    if (d.success) {
+      renderPendingUsers();
+      sendApprovalEmailClient(d.user_email, d.user_name, d.login_url);
+    }
   }).catch(function() {
     alert.textContent = 'Network error.';
     alert.className   = 'admin-alert show err';
   });
+}
+
+function sendApprovalEmailClient(toEmail, toName, loginUrl) {
+  if (!toEmail || !window.emailjs) return;
+  var alert = document.getElementById('admin-users-alert');
+  try {
+    emailjs.init({ publicKey: '8RVJ1Y6zL-VvkLeE1' });
+    emailjs.send('service_9ko6lao', 'template_gvp6exk', {
+      to_name: toName || toEmail,
+      to_email: toEmail,
+      login_url: loginUrl || window.location.origin,
+      user_email: toEmail,
+      site_name: 'NEEL Solutions'
+    }).then(function() {
+      alert.textContent = 'User approved and confirmation email sent to ' + toEmail + '.';
+      alert.className = 'admin-alert show ok';
+    }).catch(function(err) {
+      var msg = (err && (err.text || err.message)) ? (err.text || err.message) : 'EmailJS send failed.';
+      alert.textContent = 'User approved, but email failed: ' + msg;
+      alert.className = 'admin-alert show err';
+    });
+  } catch (e) {
+    alert.textContent = 'User approved, but email setup failed in browser.';
+    alert.className = 'admin-alert show err';
+  }
 }
 function rejectUser(id) {
   if (!confirm('Reject and delete this registration?\nThis cannot be undone.')) return;

@@ -431,7 +431,14 @@ def admin_approve_user(user_id):
     conn.commit()
     conn.close()
     _send_email_async(_send_approval_email, user["email"], user["name"] or user["email"])
-    return jsonify({"success": True, "message": f"User {user['email']} approved."})
+    login_url = os.environ.get("SITE_URL") or request.url_root.rstrip("/")
+    return jsonify({
+        "success": True,
+        "message": f"User {user['email']} approved.",
+        "user_email": user["email"],
+        "user_name": user["name"] or user["email"],
+        "login_url": login_url
+    })
 
 @app.route("/admin/reject/<int:user_id>", methods=["POST"])
 def admin_reject_user(user_id):
