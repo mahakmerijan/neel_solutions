@@ -66,6 +66,21 @@ border-radius:25px;cursor:pointer;font-weight:bold;font-size:.95rem;transition:a
 .accordion-body .stat h3{font-size:1.15rem;color:#0f766e;text-align:center}
 .accordion-body .stat p{text-align:center}
 
+/* ── Section focus / blur effect ───────────────────────── */
+body.section-focus section,
+body.section-focus header{
+  filter:blur(4px) brightness(.7);
+  pointer-events:none;
+  transition:filter .35s,opacity .35s;
+}
+body.section-focus section.focused,
+body.section-focus header.focused{
+  filter:none;
+  pointer-events:auto;
+  opacity:1;
+}
+/* header never gets focused — keep it blurred */
+
 /* ── Brochure button in nav ──────────────────────────────── */
 .nav-brochure-btn{background:#f59e0b;color:white;border:none;padding:8px 20px;
 border-radius:20px;cursor:pointer;font-weight:bold;font-size:.88rem;
@@ -381,10 +396,10 @@ textarea.hb-input{resize:vertical}
   <span class="nav-logo-text">NEEL Solutions</span>
 </div>
 <div class="nav-links" id="nav-links">
-  <a href="#" onclick="closeNav();window.scrollTo({top:0,behavior:'smooth'});return false">Home</a>
-  <a href="#contact" onclick="closeNav()">Contact</a>
-  <a href="#analytics" onclick="closeNav();showTab('impact','csr',event.target)">CSR</a>
-  <a href="#analytics" onclick="closeNav();showTab('impact','greenlivelihood',event.target)">GLI</a>
+  <a href="#" onclick="closeNav();clearFocus();window.scrollTo({top:0,behavior:'smooth'});return false">Home</a>
+  <a href="#contact" onclick="closeNav();focusSection('contact')">Contact</a>
+  <a href="#analytics" onclick="closeNav();focusSection('analytics');showTab('impact','csr',null)">CSR</a>
+  <a href="#analytics" onclick="closeNav();focusSection('analytics');showTab('impact','greenlivelihood',null)">GLI</a>
   <!-- Mobile auth buttons -->
   <div id="mobile-auth-btns" style="display:flex;gap:10px;padding:12px 22px;border-top:1px solid #374151;margin-top:8px">
     <button class="auth-nav-btn register-btn" style="flex:1" onclick="openAuthModal('panel-register');closeNav()">Register</button>
@@ -401,7 +416,6 @@ textarea.hb-input{resize:vertical}
 <h2 style="display:none">Impact Analytics Dashboard</h2>
 
 <div class="tab-nav" id="impact-tabs">
-  <button class="tab-btn active" onclick="showTab('impact','overview',this)">Overview</button>
   <button class="tab-btn" id="tab-clients-collabs" onclick="showTab('impact','clientscollabs',this)">Clients &amp; Collaborations</button>
 </div>
 
@@ -1006,6 +1020,21 @@ function rejectUser(id) {
   });
 }
 
+/* ── Section focus / blur ─────────────────────────────── */
+function focusSection(sectionId) {
+  document.body.classList.add('section-focus');
+  document.querySelectorAll('section').forEach(function(s) {
+    s.classList.toggle('focused', s.id === sectionId);
+  });
+  document.querySelector('header').classList.remove('focused');
+}
+function clearFocus() {
+  document.body.classList.remove('section-focus');
+  document.querySelectorAll('section, header').forEach(function(s) {
+    s.classList.remove('focused');
+  });
+}
+
 /* ── Tab switching ─────────────────────────────────────── */
 function showTab(group, name, btn) {
   document.querySelectorAll('.tab-content[data-group="' + group + '"]').forEach(function(el) {
@@ -1015,7 +1044,7 @@ function showTab(group, name, btn) {
     b.classList.remove('active');
   });
   document.getElementById(group + '-' + name).classList.remove('hidden');
-  btn.classList.add('active');
+  if (btn) btn.classList.add('active');
 }
 
 /* ── Brochure PDF download (all sections except header) ── */
