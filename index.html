@@ -82,16 +82,32 @@ body.section-focus header.focused{
 /* header never gets focused — keep it blurred */
 
 /* ── Digital sub-services ──────────────────────────────── */
-.digital-sub-services{display:none;padding:12px 15px 16px;border-top:1px solid #e5e7eb;flex-wrap:wrap;gap:8px;justify-content:center}
-.digital-sub-services.open{display:flex}
-.sub-svc-btn{background:#e8f0fe;color:#1e3a8a;border:none;padding:7px 16px;
-  border-radius:20px;cursor:pointer;font-weight:600;font-size:.82rem;
-  transition:all .2s;white-space:nowrap}
-.sub-svc-btn:hover,.sub-svc-btn.active{background:#2563eb;color:white}
+.digital-sub-services{display:none}
 .card-expand-btn{display:block;width:calc(100% - 30px);margin:10px 15px 12px;
   background:#0f766e;color:white;border:none;padding:9px 0;border-radius:20px;
   cursor:pointer;font-weight:bold;font-size:.88rem;transition:background .2s}
 .card-expand-btn:hover{background:#065f46}
+
+/* ── Digital services modal overlay ────────────────────── */
+.dsvc-overlay{display:none;position:fixed;inset:0;z-index:15000;
+  align-items:center;justify-content:center;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  background:rgba(0,0,0,.45)}
+.dsvc-overlay.open{display:flex}
+.dsvc-modal{background:white;border-radius:20px;padding:36px 32px 32px;
+  width:90%;max-width:520px;box-shadow:0 25px 70px rgba(0,0,0,.35);
+  text-align:center;position:relative}
+.dsvc-modal h3{color:#1e3a8a;font-size:1.2rem;margin-bottom:6px}
+.dsvc-modal p{color:#6b7280;font-size:.88rem;margin-bottom:24px}
+.dsvc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:10px}
+.dsvc-btn{background:#e8f0fe;color:#1e3a8a;border:none;padding:14px 10px;
+  border-radius:14px;cursor:pointer;font-weight:700;font-size:.92rem;
+  transition:all .2s;line-height:1.3}
+.dsvc-btn:hover{background:#2563eb;color:white;transform:translateY(-2px);
+  box-shadow:0 6px 16px rgba(37,99,235,.3)}
+.dsvc-close{position:absolute;top:12px;right:16px;background:none;border:none;
+  font-size:1.5rem;cursor:pointer;color:#9ca3af;line-height:1}
+.dsvc-close:hover{color:#111}
 
 /* ── Brochure button in nav ──────────────────────────────── */
 .nav-brochure-btn{background:#f59e0b;color:white;border:none;padding:8px 20px;
@@ -509,19 +525,11 @@ textarea.hb-input{resize:vertical}
 <p>Baseline studies, market research, enterprise diagnostics and policy analysis.</p>
 </div>
 
-<div class="card" id="card-digital">
+<div class="card" id="card-digital" style="cursor:pointer" onclick="openDigitalModal()">
 <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200" alt="Digital Products">
 <h3>Digital and Analytical Products/ Services</h3>
 <p>Web portals, mobile apps, AI solutions, dashboards, analytics and automation systems.</p>
-<button class="card-expand-btn" onclick="toggleDigitalServices(this)">Explore Services &#9660;</button>
-<div class="digital-sub-services" id="digital-sub-services">
-  <button class="sub-svc-btn">Financial Analysis</button>
-  <button class="sub-svc-btn">Inventory Management</button>
-  <button class="sub-svc-btn">CRM</button>
-  <button class="sub-svc-btn">Web Service</button>
-  <button class="sub-svc-btn">Workflow Management</button>
-  <button class="sub-svc-btn">Quality Control</button>
-</div>
+<button class="card-expand-btn" onclick="event.stopPropagation();openDigitalModal()">Explore Services &#9660;</button>
 </div>
 
 </div>
@@ -1043,11 +1051,24 @@ function rejectUser(id) {
   });
 }
 
-/* ── Digital sub-services toggle ───────────────────────── */
-function toggleDigitalServices(btn) {
-  var panel = document.getElementById('digital-sub-services');
-  var isOpen = panel.classList.toggle('open');
-  btn.innerHTML = isOpen ? 'Hide Services &#9650;' : 'Explore Services &#9660;';
+/* ── Digital services modal ────────────────────────────── */
+function openDigitalModal() {
+  document.getElementById('dsvc-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeDigitalModal() {
+  document.getElementById('dsvc-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+/* ── Digital services modal ──────────────────────────── */
+function openDigitalModal() {
+  document.getElementById('dsvc-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeDigitalModal() {
+  document.getElementById('dsvc-overlay').classList.remove('open');
+  document.body.style.overflow = '';
 }
 
 /* ── Section focus / blur ─────────────────────────────── */
