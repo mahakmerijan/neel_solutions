@@ -81,6 +81,18 @@ body.section-focus header.focused{
 }
 /* header never gets focused — keep it blurred */
 
+/* ── Digital sub-services ──────────────────────────────── */
+.digital-sub-services{display:none;padding:12px 15px 16px;border-top:1px solid #e5e7eb;flex-wrap:wrap;gap:8px;justify-content:center}
+.digital-sub-services.open{display:flex}
+.sub-svc-btn{background:#e8f0fe;color:#1e3a8a;border:none;padding:7px 16px;
+  border-radius:20px;cursor:pointer;font-weight:600;font-size:.82rem;
+  transition:all .2s;white-space:nowrap}
+.sub-svc-btn:hover,.sub-svc-btn.active{background:#2563eb;color:white}
+.card-expand-btn{display:block;width:calc(100% - 30px);margin:10px 15px 12px;
+  background:#0f766e;color:white;border:none;padding:9px 0;border-radius:20px;
+  cursor:pointer;font-weight:bold;font-size:.88rem;transition:background .2s}
+.card-expand-btn:hover{background:#065f46}
+
 /* ── Brochure button in nav ──────────────────────────────── */
 .nav-brochure-btn{background:#f59e0b;color:white;border:none;padding:8px 20px;
 border-radius:20px;cursor:pointer;font-weight:bold;font-size:.88rem;
@@ -497,10 +509,19 @@ textarea.hb-input{resize:vertical}
 <p>Baseline studies, market research, enterprise diagnostics and policy analysis.</p>
 </div>
 
-<div class="card">
+<div class="card" id="card-digital">
 <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=1200" alt="Digital Products">
 <h3>Digital and Analytical Products/ Services</h3>
 <p>Web portals, mobile apps, AI solutions, dashboards, analytics and automation systems.</p>
+<button class="card-expand-btn" onclick="toggleDigitalServices(this)">Explore Services &#9660;</button>
+<div class="digital-sub-services" id="digital-sub-services">
+  <button class="sub-svc-btn">Financial Analysis</button>
+  <button class="sub-svc-btn">Inventory Management</button>
+  <button class="sub-svc-btn">CRM</button>
+  <button class="sub-svc-btn">Web Service</button>
+  <button class="sub-svc-btn">Workflow Management</button>
+  <button class="sub-svc-btn">Quality Control</button>
+</div>
 </div>
 
 </div>
@@ -1020,6 +1041,13 @@ function rejectUser(id) {
     alert.textContent = 'Network error.';
     alert.className   = 'admin-alert show err';
   });
+}
+
+/* ── Digital sub-services toggle ───────────────────────── */
+function toggleDigitalServices(btn) {
+  var panel = document.getElementById('digital-sub-services');
+  var isOpen = panel.classList.toggle('open');
+  btn.innerHTML = isOpen ? 'Hide Services &#9650;' : 'Explore Services &#9660;';
 }
 
 /* ── Section focus / blur ─────────────────────────────── */
