@@ -604,6 +604,23 @@ textarea.hb-input{resize:vertical}
 
 </section>
 
+<!-- ── Digital Services Modal ──────────────────────────────────── -->
+<div class="dsvc-overlay" id="dsvc-overlay" onclick="closeDigitalModal()">
+  <div class="dsvc-modal" onclick="event.stopPropagation()">
+    <button class="dsvc-close" onclick="closeDigitalModal()">&times;</button>
+    <h3>Digital and Analytical Products/ Services</h3>
+    <p>Select a service area to learn more</p>
+    <div class="dsvc-grid">
+      <button class="dsvc-btn">Financial Analysis</button>
+      <button class="dsvc-btn">Inventory Management</button>
+      <button class="dsvc-btn">CRM</button>
+      <button class="dsvc-btn">Web Service</button>
+      <button class="dsvc-btn">Workflow Management</button>
+      <button class="dsvc-btn">Quality Control</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── Haat Bazar Modal ──────────────────────────────────────────── -->
 <div class="hb-overlay" id="hb-overlay">
   <div class="hb-modal">
@@ -1049,16 +1066,6 @@ function rejectUser(id) {
     alert.textContent = 'Network error.';
     alert.className   = 'admin-alert show err';
   });
-}
-
-/* ── Digital services modal ────────────────────────────── */
-function openDigitalModal() {
-  document.getElementById('dsvc-overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function closeDigitalModal() {
-  document.getElementById('dsvc-overlay').classList.remove('open');
-  document.body.style.overflow = '';
 }
 
 /* ── Digital services modal ──────────────────────────── */
