@@ -34,6 +34,7 @@ flex:0 1 calc(33.333% - 20px);min-width:270px;max-width:380px}
 
 .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px}
 .gallery img{width:100%;height:220px;object-fit:cover;border-radius:12px}
+.gallery video{width:100%;height:220px;object-fit:cover;border-radius:12px;background:#000}
 
 .resources{background:white;border-radius:15px;padding:30px;
 box-shadow:0 5px 18px rgba(0,0,0,.08)}
@@ -108,6 +109,12 @@ body.section-focus header.focused{
 .dsvc-close{position:absolute;top:12px;right:16px;background:none;border:none;
   font-size:1.5rem;cursor:pointer;color:#9ca3af;line-height:1}
 .dsvc-close:hover{color:#111}
+.dsvc-btn.active{background:#2563eb;color:white}
+.dsvc-desc{display:none;margin-top:14px;padding:14px 16px;background:#f0f6ff;border-left:4px solid #2563eb;
+  border-radius:10px;text-align:left}
+.dsvc-desc.show{display:block}
+.dsvc-modal .dsvc-desc-title{color:#1e3a8a;font-weight:700;font-size:.95rem;margin:0 0 4px}
+.dsvc-modal .dsvc-desc-text{color:#374151;font-size:.88rem;line-height:1.5;margin:0}
 
 /* ── Brochure button in nav ──────────────────────────────── */
 .nav-brochure-btn{background:#f59e0b;color:white;border:none;padding:8px 20px;
@@ -385,6 +392,19 @@ textarea.hb-input{resize:vertical}
 .admin-alert.show{display:block}
 .admin-alert.ok{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7}
 .admin-alert.err{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5}
+.admin-block{margin-top:36px}
+.gv-form{background:white;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);padding:20px;
+  display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:center}
+.gv-form select,.gv-form input[type=text],.gv-form input[type=file]{padding:9px 12px;border:1px solid #d1d5db;
+  border-radius:8px;font-size:.88rem;width:100%;box-sizing:border-box;background:#fff}
+.gv-form .gv-file{grid-column:1/-1}
+.gv-form .gv-submit{grid-column:1/-1;justify-self:start}
+.gv-list{margin-top:16px;background:white;border-radius:14px;box-shadow:0 3px 12px rgba(0,0,0,.08);overflow:hidden}
+.gv-row{display:grid;grid-template-columns:auto 1fr auto auto;gap:12px;align-items:center;
+  padding:12px 20px;border-bottom:1px solid #f0f4f8;font-size:.86rem}
+.gv-row:last-child{border-bottom:none}
+.gv-tag{background:#e0e7ff;color:#3730a3;border-radius:6px;padding:2px 8px;font-size:.72rem;font-weight:700}
+@media(max-width:768px){.gv-form{grid-template-columns:1fr}}
 @media(max-width:768px){
   .hb-overlay{padding:0}
   .hb-modal{border-radius:0;max-height:100vh}
@@ -522,7 +542,7 @@ textarea.hb-input{resize:vertical}
 
 <section id="gallery">
 <h2>Project Gallery</h2>
-<div class="gallery">
+<div class="gallery" id="project-gallery-grid">
 <img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=1200">
 <img src="https://images.unsplash.com/photo-1523741543316-beb7fc7023d8?w=1200">
 <img src="https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=1200">
@@ -532,7 +552,7 @@ textarea.hb-input{resize:vertical}
 
 <section id="video-gallery">
 <h2>Learning Gallery</h2>
-<div class="video-grid">
+<div class="video-grid" id="learning-gallery-grid">
   <video controls style="width:100%;height:360px;border-radius:12px;background:#000;box-shadow:0 5px 18px rgba(0,0,0,.12)">
     <source src="VID-20260531-WA0001.mp4" type="video/mp4">
     Your browser does not support the video tag.
@@ -594,17 +614,21 @@ textarea.hb-input{resize:vertical}
     <button class="dsvc-close" onclick="closeDigitalModal()">&times;</button>
     <h3>Digital and Analytical Products/ Services</h3>
     <p>Select a service area to learn more</p>
-    <div class="dsvc-grid">
-      <button class="dsvc-btn">Financial Analysis</button>
-      <button class="dsvc-btn">Inventory Management</button>
-      <button class="dsvc-btn">CRM</button>
-      <button class="dsvc-btn">Web Service</button>
-      <button class="dsvc-btn">Workflow Management</button>
-      <button class="dsvc-btn">Quality Control</button>
-      <button class="dsvc-btn">AI Agents</button>
-      <button class="dsvc-btn">Data Visualization &amp; BI Dashboards</button>
-      <button class="dsvc-btn">Impact Monitoring &amp; Evaluation (M&amp;E) Tools</button>
-      <button class="dsvc-btn">SMS/IVR &amp; WhatsApp Bots</button>
+    <div class="dsvc-grid" id="dsvc-grid">
+      <button class="dsvc-btn" data-desc="Tools that track income, expenses and budgets in one place. They turn financial data into clear reports for better funding and spending decisions.">Financial Analysis</button>
+      <button class="dsvc-btn" data-desc="Systems that track stock levels, purchases and supplies in real time. They help avoid shortages and wastage across stores and locations.">Inventory Management</button>
+      <button class="dsvc-btn" data-desc="Customer Relationship Management tools that keep records of beneficiaries, customers and partners. They help you follow up, track interactions and build stronger relationships.">CRM</button>
+      <button class="dsvc-btn" data-desc="Websites, portals and online services built for your organisation. They let people find information, register and access your services anytime.">Web Service</button>
+      <button class="dsvc-btn" data-desc="Digital workflows that route tasks, approvals and updates between team members. They reduce paperwork and make every step of a process visible.">Workflow Management</button>
+      <button class="dsvc-btn" data-desc="Checklists and monitoring tools that verify products, processes and field work meet set standards. They catch issues early and keep quality consistent.">Quality Control</button>
+      <button class="dsvc-btn" data-desc="Intelligent assistants that answer questions, automate routine tasks and analyse data. They work around the clock to save time and effort.">AI Agents</button>
+      <button class="dsvc-btn" data-desc="Interactive charts and dashboards that turn raw data into easy-to-read insights. They help teams spot trends and make evidence-based decisions.">Data Visualization &amp; BI Dashboards</button>
+      <button class="dsvc-btn" data-desc="Tools to collect data, track indicators and measure the results of programmes. They show what is working and report impact to donors and stakeholders.">Impact Monitoring &amp; Evaluation (M&amp;E) Tools</button>
+      <button class="dsvc-btn" data-desc="Automated messaging and voice systems that reach people on their phones. They share alerts, collect responses and answer queries over SMS, IVR calls and WhatsApp.">SMS/IVR &amp; WhatsApp Bots</button>
+    </div>
+    <div class="dsvc-desc" id="dsvc-desc">
+      <p class="dsvc-desc-title" id="dsvc-desc-title"></p>
+      <p class="dsvc-desc-text" id="dsvc-desc-text"></p>
     </div>
   </div>
 </div>
@@ -799,6 +823,22 @@ textarea.hb-input{resize:vertical}
     <div class="admin-section-sub">Review new registrations and approve or reject them. Approved users automatically receive a confirmation email.</div>
     <div class="admin-alert" id="admin-users-alert"></div>
     <div class="pending-wrap" id="pending-users-wrap"></div>
+
+    <div class="admin-block">
+      <div class="admin-section-title">&#127916; Gallery Uploads</div>
+      <div class="admin-section-sub">Upload videos to the Learning Gallery, or images (JPG, JPEG, PNG, GIF, WebP) and videos to the Project Gallery. Video formats: MP4, WebM, MOV, M4V, OGG.</div>
+      <div class="admin-alert" id="gv-alert"></div>
+      <div class="gv-form">
+        <select id="gv-section">
+          <option value="learning">Learning Gallery</option>
+          <option value="project">Project Gallery</option>
+        </select>
+        <input type="text" id="gv-title" maxlength="120" placeholder="Title (optional)">
+        <input class="gv-file" type="file" id="gv-file" accept="video/mp4,video/webm,video/quicktime,video/ogg,image/jpeg,image/png,image/gif,image/webp,.mp4,.webm,.mov,.m4v,.ogg,.jpg,.jpeg,.png,.gif,.webp">
+        <button class="btn-approve gv-submit" id="gv-submit" onclick="uploadGalleryVideo()">&#8679; Upload</button>
+      </div>
+      <div class="gv-list" id="gv-list"></div>
+    </div>
   </div>
 </div>
 
@@ -969,6 +1009,7 @@ function openAdminPanel() {
     sessionStorage.setItem('neel_admin_panel_open', '1');
     document.getElementById('admin-panel-overlay').classList.add('open');
     renderPendingUsers();
+    renderAdminGalleryVideos();
   });
 }
 function escHtml(s) {
@@ -1056,13 +1097,109 @@ function rejectUser(id) {
   });
 }
 
+/* ── Gallery videos ───────────────────────────────── */
+var GV_GRIDS = {project: 'project-gallery-grid', learning: 'learning-gallery-grid'};
+function loadGalleryVideos() {
+  apiGet('/gallery/videos').then(function(videos) {
+    if (!Array.isArray(videos)) return;
+    Object.keys(GV_GRIDS).forEach(function(sec) {
+      var grid = document.getElementById(GV_GRIDS[sec]);
+      if (!grid) return;
+      grid.querySelectorAll('[data-uploaded]').forEach(function(v) { v.remove(); });
+      videos.filter(function(v) { return v.section === sec; }).forEach(function(v) {
+        var isImg = v.media_type === 'image';
+        var el = document.createElement(isImg ? 'img' : 'video');
+        if (!isImg) { el.controls = true; el.preload = 'metadata'; }
+        el.setAttribute('data-uploaded', '1');
+        el.src = '/uploads/gallery/' + encodeURIComponent(v.filename);
+        if (v.title) { el.title = v.title; if (isImg) el.alt = v.title; }
+        if (sec === 'learning') {
+          el.style.cssText = 'width:100%;height:360px;border-radius:12px;background:#000;box-shadow:0 5px 18px rgba(0,0,0,.12)';
+        }
+        grid.appendChild(el);
+      });
+    });
+  }).catch(function(){});
+}
+function gvAlert(msg, ok) {
+  var a = document.getElementById('gv-alert');
+  a.textContent = msg;
+  a.className = 'admin-alert show ' + (ok ? 'ok' : 'err');
+}
+function renderAdminGalleryVideos() {
+  var wrap = document.getElementById('gv-list');
+  apiGet('/gallery/videos').then(function(videos) {
+    if (!Array.isArray(videos) || !videos.length) {
+      wrap.innerHTML = '<div class="admin-empty"><p>No uploaded files yet.</p></div>';
+      return;
+    }
+    wrap.innerHTML = videos.map(function(v) {
+      return '<div class="gv-row">' +
+        '<span class="gv-tag">' + (v.section === 'project' ? 'Project' : 'Learning') + '</span>' +
+        '<span>' + escHtml(v.title || v.filename) + '</span>' +
+        '<a href="/uploads/gallery/' + encodeURIComponent(v.filename) + '" target="_blank" rel="noopener">Preview</a>' +
+        '<button class="btn-reject" onclick="deleteGalleryVideo(' + v.id + ')">&#10005; Delete</button>' +
+        '</div>';
+    }).join('');
+  }).catch(function() {
+    wrap.innerHTML = '<div class="admin-empty"><p style="color:#dc2626">Failed to load videos.</p></div>';
+  });
+}
+function uploadGalleryVideo() {
+  var file = document.getElementById('gv-file').files[0];
+  if (!file) return gvAlert('Please select a file.', false);
+  var fd = new FormData();
+  fd.append('section', document.getElementById('gv-section').value);
+  fd.append('title', document.getElementById('gv-title').value.trim());
+  fd.append('video', file);
+  var btn = document.getElementById('gv-submit');
+  btn.disabled = true;
+  gvAlert('Uploading... please wait.', true);
+  fetch('/admin/gallery/videos', {method: 'POST', credentials: 'same-origin', body: fd})
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      gvAlert(d.message, d.success);
+      if (d.success) {
+        document.getElementById('gv-file').value = '';
+        document.getElementById('gv-title').value = '';
+        renderAdminGalleryVideos();
+        loadGalleryVideos();
+      }
+    })
+    .catch(function() { gvAlert('Upload failed. Please try again.', false); })
+    .then(function() { btn.disabled = false; });
+}
+function deleteGalleryVideo(id) {
+  if (!confirm('Delete this item from the gallery?')) return;
+  fetch('/admin/gallery/videos/' + id, {method: 'DELETE', credentials: 'same-origin'})
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      gvAlert(d.message, d.success);
+      if (d.success) { renderAdminGalleryVideos(); loadGalleryVideos(); }
+    })
+    .catch(function() { gvAlert('Network error.', false); });
+}
+document.addEventListener('DOMContentLoaded', loadGalleryVideos);
+
 /* ── Digital services modal ──────────────────────────── */
+// The modal stops click propagation, so this must listen on the grid, not document.
+document.getElementById('dsvc-grid').addEventListener('click', function(e) {
+  var btn = e.target.closest('.dsvc-btn');
+  if (!btn) return;
+  document.querySelectorAll('#dsvc-grid .dsvc-btn.active').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById('dsvc-desc-title').textContent = btn.textContent;
+  document.getElementById('dsvc-desc-text').textContent = btn.getAttribute('data-desc') || '';
+  document.getElementById('dsvc-desc').classList.add('show');
+});
 function openDigitalModal() {
   document.getElementById('dsvc-overlay').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 function closeDigitalModal() {
   document.getElementById('dsvc-overlay').classList.remove('open');
+  document.getElementById('dsvc-desc').classList.remove('show');
+  document.querySelectorAll('#dsvc-grid .dsvc-btn.active').forEach(function(b) { b.classList.remove('active'); });
   document.body.style.overflow = '';
 }
 

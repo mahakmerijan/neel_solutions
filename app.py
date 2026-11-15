@@ -8,6 +8,7 @@ from flask_mail import Mail, Message
 
 app = Flask(__name__, static_folder=".", static_url_path="")
 app.secret_key = os.environ.get("SECRET_KEY", "neel-solutions-dev-secret-2026")
+app.config["MAX_CONTENT_LENGTH"] = int(os.environ.get("MAX_UPLOAD_MB", 500)) * 1024 * 1024
 
 # ── Mail ──────────────────────────────────────────────────────
 app.config["MAIL_SERVER"]         = os.environ.get("MAIL_SERVER",   "smtp.gmail.com")
@@ -45,6 +46,13 @@ ALLOWED_IMG_EXTS = {"png", "jpg", "jpeg", "gif", "webp"}
 def _allowed_img(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_IMG_EXTS
 
+GALLERY_FOLDER      = os.path.join(os.path.dirname(__file__), "uploads", "gallery")
+ALLOWED_VIDEO_EXTS  = {"mp4", "webm", "mov", "m4v", "ogg"}
+GALLERY_SECTIONS    = {"project", "learning"}
+
+def _allowed_video(filename):
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_VIDEO_EXTS
+
 def init_db():
     conn = get_db()
     conn.execute("""
@@ -70,6 +78,15 @@ def init_db():
             image_filename TEXT,
             posted_by     TEXT,
             created_at    TEXT DEFAULT (datetime('now','localtime'))
+        )
+    """)
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS gallery_videos (
+            id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            section    TEXT NOT NULL,
+            title      TEXT,
+            filename   TEXT NOT NULL,
+            created_at TEXT DEFAULT (datetime('now','localtime'))
         )
     """)
     conn.commit()
@@ -380,6 +397,36 @@ def delete_haat_bazar_ad(ad_id):
 def serve_haat_bazar_upload(filename):
     return send_from_directory(UPLOAD_FOLDER, secure_filename(filename))
 
+# ── Gallery videos ───────────────────────────────────────────
+@app.route("/gallery/videos")
+def list_gallery_videos():
+    section = request.args.get("section", "")
+    conn = get_db()
+    if section in GALLERY_SECTIONS:
+        rows = conn.execute(
+            "SELECT id, section, title, filename FROM gallery_videos WHERE section=? ORDER BY id ASC",
+            (section,)
+        ).fetchall()
+    else:
+        rows = conn.execute(
+            "SELECT id, section, title, filename FROM gallery_videos ORDER BY id ASC"
+        ).fetchall()
+    conn.close()
+    items = []
+    for r in rows:
+        d = dict(r)
+        d["media_type"] = "image" if _allowed_img(d["filename"]) else "video"
+        items.append(d)
+    return jsonify(items)
+
+@app.route("/uploads/gallery/<filename>")
+def serve_gallery_upload(filename):
+    return send_from_directory(GALLERY_FOLDER, secure_filename(filename))
+
+@app.errorhandler(413)
+def too_large(_e):
+    return jsonify({"success": False, "message": "File is too large."}), 413
+
 # ── Admin API ─────────────────────────────────────────────────
 def _require_admin():
     if not session.get("admin_logged_in"):
@@ -404,6 +451,55 @@ def admin_logout():
 @app.route("/admin/check")
 def admin_check():
     return jsonify({"admin": bool(session.get("admin_logged_in"))})
+
+@app.route("/admin/gallery/videos", methods=["POST"])
+def admin_upload_gallery_video():
+    err = _require_admin()
+    if err:
+        return err
+    section = (request.form.get("section") or "").strip()
+    title   = (request.form.get("title") or "").strip()[:120]
+    f = request.files.get("video")
+    if section not in GALLERY_SECTIONS:
+        return jsonify({"success": False, "message": "Choose Project Gallery or Learning Gallery."}), 400
+    if not f or not f.filename:
+        return jsonify({"success": False, "message": "Please select a file."}), 400
+    # Images are accepted for the Project Gallery only.
+    if not (_allowed_video(f.filename) or (section == "project" and _allowed_img(f.filename))):
+        msg = ("Unsupported format. Use JPG, JPEG, PNG, GIF, WebP or a video (MP4, WebM, MOV, M4V, OGG)."
+               if section == "project" else
+               "Unsupported format. Use MP4, WebM, MOV, M4V or OGG.")
+        return jsonify({"success": False, "message": msg}), 400
+    os.makedirs(GALLERY_FOLDER, exist_ok=True)
+    ext      = secure_filename(f.filename).rsplit(".", 1)[1].lower()
+    filename = uuid.uuid4().hex + "." + ext
+    f.save(os.path.join(GALLERY_FOLDER, filename))
+    conn = get_db()
+    conn.execute(
+        "INSERT INTO gallery_videos (section, title, filename) VALUES (?,?,?)",
+        (section, title, filename)
+    )
+    conn.commit()
+    conn.close()
+    return jsonify({"success": True, "message": "File uploaded."})
+
+@app.route("/admin/gallery/videos/<int:video_id>", methods=["DELETE"])
+def admin_delete_gallery_video(video_id):
+    err = _require_admin()
+    if err:
+        return err
+    conn = get_db()
+    row = conn.execute("SELECT filename FROM gallery_videos WHERE id=?", (video_id,)).fetchone()
+    if not row:
+        conn.close()
+        return jsonify({"success": False, "message": "File not found."}), 404
+    conn.execute("DELETE FROM gallery_videos WHERE id=?", (video_id,))
+    conn.commit()
+    conn.close()
+    path = os.path.join(GALLERY_FOLDER, row["filename"])
+    if os.path.exists(path):
+        os.remove(path)
+    return jsonify({"success": True, "message": "File deleted."})
 
 @app.route("/admin/pending-users")
 def admin_pending_users():
