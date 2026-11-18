@@ -35,6 +35,12 @@ flex:0 1 calc(33.333% - 20px);min-width:270px;max-width:380px}
 .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:15px}
 .gallery img{width:100%;height:220px;object-fit:cover;border-radius:12px}
 .gallery video{width:100%;height:220px;object-fit:cover;border-radius:12px;background:#000}
+.featured-video{padding:0 8% 36px}
+.featured-video video{display:block;width:100%;max-width:1100px;max-height:620px;
+  margin:0 auto;border-radius:14px;background:#000;box-shadow:0 5px 18px rgba(0,0,0,.12)}
+.gallery-tabs{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-bottom:24px}
+.gallery-panel[hidden]{display:none}
+.gallery-empty{grid-column:1/-1;text-align:center;color:#64748b;padding:24px}
 
 .resources{background:white;border-radius:15px;padding:30px;
 box-shadow:0 5px 18px rgba(0,0,0,.08)}
@@ -502,6 +508,13 @@ textarea.hb-input{resize:vertical}
 
 </section>
 
+<section class="featured-video" aria-label="Featured video">
+  <video controls playsinline preload="metadata" aria-label="NEEL Solutions project video">
+    <source src="/uploads/VID-20261118-WA0020.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+</section>
+
 <section id="services">
 <h2>Our Service Portfolio</h2>
 <div class="services">
@@ -542,11 +555,20 @@ textarea.hb-input{resize:vertical}
 
 <section id="gallery">
 <h2>Project Gallery</h2>
-<div class="gallery" id="project-gallery-grid">
-<img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=1200">
-<img src="https://images.unsplash.com/photo-1523741543316-beb7fc7023d8?w=1200">
-<img src="https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=1200">
-<img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200">
+<div class="gallery-tabs" role="group" aria-label="Project gallery categories">
+  <button class="tab-btn active" id="training-gallery-tab" type="button" aria-controls="training-gallery-panel" aria-pressed="true" onclick="showGalleryCategory('training')">Training Section</button>
+  <button class="tab-btn" id="enterprise-gallery-tab" type="button" aria-controls="enterprise-gallery-panel" aria-pressed="false" onclick="showGalleryCategory('enterprise')">Enterprises &amp; Market</button>
+</div>
+<div class="gallery-panel" id="training-gallery-panel">
+  <div class="gallery" id="training-gallery-grid" aria-live="polite"></div>
+</div>
+<div class="gallery-panel" id="enterprise-gallery-panel" hidden>
+  <div class="gallery" id="project-gallery-grid">
+    <img src="https://images.unsplash.com/photo-1464226184884-fa280b87c399?w=1200" alt="Fresh produce at a local market" loading="lazy">
+    <img src="https://images.unsplash.com/photo-1523741543316-beb7fc7023d8?w=1200" alt="Cultivated fields across a green landscape" loading="lazy">
+    <img src="https://images.unsplash.com/photo-1509099836639-18ba1795216d?w=1200" alt="Children in a community" loading="lazy">
+    <img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200" alt="Modern business office" loading="lazy">
+  </div>
 </div>
 </section>
 
@@ -555,10 +577,6 @@ textarea.hb-input{resize:vertical}
 <div class="video-grid" id="learning-gallery-grid">
   <video controls style="width:100%;height:360px;border-radius:12px;background:#000;box-shadow:0 5px 18px rgba(0,0,0,.12)">
     <source src="VID-20260531-WA0001.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-  <video controls style="width:100%;height:360px;border-radius:12px;background:#000;box-shadow:0 5px 18px rgba(0,0,0,.12)">
-    <source src="VID-20260601-WA0000.mp4" type="video/mp4">
     Your browser does not support the video tag.
   </video>
 </div>
@@ -1099,6 +1117,35 @@ function rejectUser(id) {
 
 /* ── Gallery videos ───────────────────────────────── */
 var GV_GRIDS = {project: 'project-gallery-grid', learning: 'learning-gallery-grid'};
+function showGalleryCategory(category) {
+  var training = category === 'training';
+  document.getElementById('training-gallery-panel').hidden = !training;
+  document.getElementById('enterprise-gallery-panel').hidden = training;
+  document.getElementById('training-gallery-tab').classList.toggle('active', training);
+  document.getElementById('enterprise-gallery-tab').classList.toggle('active', !training);
+  document.getElementById('training-gallery-tab').setAttribute('aria-pressed', String(training));
+  document.getElementById('enterprise-gallery-tab').setAttribute('aria-pressed', String(!training));
+}
+function loadTrainingImages() {
+  var grid = document.getElementById('training-gallery-grid');
+  apiGet('/gallery/training-images').then(function(images) {
+    if (!Array.isArray(images)) throw new Error('Invalid training gallery response.');
+    if (!images.length) {
+      grid.innerHTML = '<p class="gallery-empty">No training photos are available yet.</p>';
+      return;
+    }
+    images.forEach(function(filename) {
+      var img = document.createElement('img');
+      img.src = '/uploads/' + encodeURIComponent(filename);
+      img.alt = 'Training session photo';
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      grid.appendChild(img);
+    });
+  }).catch(function() {
+    grid.innerHTML = '<p class="gallery-empty">Training photos could not be loaded.</p>';
+  });
+}
 function loadGalleryVideos() {
   apiGet('/gallery/videos').then(function(videos) {
     if (!Array.isArray(videos)) return;
@@ -1179,7 +1226,10 @@ function deleteGalleryVideo(id) {
     })
     .catch(function() { gvAlert('Network error.', false); });
 }
-document.addEventListener('DOMContentLoaded', loadGalleryVideos);
+document.addEventListener('DOMContentLoaded', function() {
+  loadTrainingImages();
+  loadGalleryVideos();
+});
 
 /* ── Digital services modal ──────────────────────────── */
 // The modal stops click propagation, so this must listen on the grid, not document.

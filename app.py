@@ -40,7 +40,8 @@ def get_db():
     conn.row_factory = sqlite3.Row
     return conn
 
-UPLOAD_FOLDER    = os.path.join(os.path.dirname(__file__), "uploads", "haat_bazar")
+UPLOADS_FOLDER   = os.path.join(os.path.dirname(__file__), "uploads")
+UPLOAD_FOLDER    = os.path.join(UPLOADS_FOLDER, "haat_bazar")
 ALLOWED_IMG_EXTS = {"png", "jpg", "jpeg", "gif", "webp"}
 
 def _allowed_img(filename):
@@ -398,6 +399,14 @@ def serve_haat_bazar_upload(filename):
     return send_from_directory(UPLOAD_FOLDER, secure_filename(filename))
 
 # ── Gallery videos ───────────────────────────────────────────
+@app.route("/gallery/training-images")
+def list_training_images():
+    images = [
+        filename for filename in os.listdir(UPLOADS_FOLDER)
+        if os.path.isfile(os.path.join(UPLOADS_FOLDER, filename)) and _allowed_img(filename)
+    ]
+    return jsonify(sorted(images, key=str.casefold))
+
 @app.route("/gallery/videos")
 def list_gallery_videos():
     section = request.args.get("section", "")
