@@ -48,6 +48,11 @@ box-shadow:0 5px 18px rgba(0,0,0,.08)}
 .lms-link-btn{display:inline-block;background:none;color:#2563eb;text-decoration:none;
   padding:0;border-radius:0;font-size:1rem;font-weight:500;transition:color .2s}
 .lms-link-btn:hover{color:#1d4ed8;text-decoration:underline}
+.lms-link-btn.active{color:#1e3a8a;font-weight:700;text-decoration:underline}
+.lib-panel{margin-top:22px;padding-top:18px;border-top:1px solid #e5e7eb}
+.lib-panel[hidden]{display:none}
+.lib-panel-title{color:#1e3a8a;margin:0 0 14px;font-size:1.1rem}
+#lib-panel-grid{grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
 
 footer{background:#111827;color:white;text-align:center;padding:30px}
 .admin-access-btn{background:none;border:none;color:rgba(255,255,255,.35);font-size:.75rem;
@@ -586,10 +591,14 @@ textarea.hb-input{resize:vertical}
 <h2>Learning Reference Library</h2>
 <div class="resources">
 <ul>
-<li><a class="lms-link-btn" href="#">Enterprise Development Manuals</a></li>
-<li><a class="lms-link-btn" href="#">Case Studies &amp; Success Stories</a></li>
-<li><a class="lms-link-btn" href="#">Research Publications</a></li>
+<li><a class="lms-link-btn" href="#learning" data-lib="lib_manuals" aria-controls="lib-panel" aria-expanded="false">Enterprise Development Manuals</a></li>
+<li><a class="lms-link-btn" href="#learning" data-lib="lib_cases" aria-controls="lib-panel" aria-expanded="false">Case Studies &amp; Success Stories</a></li>
+<li><a class="lms-link-btn" href="#learning" data-lib="lib_research" aria-controls="lib-panel" aria-expanded="false">Research Publications</a></li>
 </ul>
+<div class="lib-panel" id="lib-panel" hidden>
+  <h3 class="lib-panel-title" id="lib-panel-title"></h3>
+  <div class="gallery" id="lib-panel-grid" aria-live="polite"></div>
+</div>
 </div>
 </section>
 
@@ -844,12 +853,15 @@ textarea.hb-input{resize:vertical}
 
     <div class="admin-block">
       <div class="admin-section-title">&#127916; Gallery Uploads</div>
-      <div class="admin-section-sub">Upload videos to the Learning Gallery, or images (JPG, JPEG, PNG, GIF, WebP) and videos to the Project Gallery. Video formats: MP4, WebM, MOV, M4V, OGG.</div>
+      <div class="admin-section-sub">Upload videos to the Learning Gallery, or images (JPG, JPEG, PNG, GIF, WebP) and videos to the Project Gallery and each Learning Reference Library option. Video formats: MP4, WebM, MOV, M4V, OGG.</div>
       <div class="admin-alert" id="gv-alert"></div>
       <div class="gv-form">
         <select id="gv-section">
           <option value="learning">Learning Gallery</option>
           <option value="project">Project Gallery</option>
+          <option value="lib_manuals">Library: Enterprise Development Manuals</option>
+          <option value="lib_cases">Library: Case Studies &amp; Success Stories</option>
+          <option value="lib_research">Library: Research Publications</option>
         </select>
         <input type="text" id="gv-title" maxlength="120" placeholder="Title (optional)">
         <input class="gv-file" type="file" id="gv-file" accept="video/mp4,video/webm,video/quicktime,video/ogg,image/jpeg,image/png,image/gif,image/webp,.mp4,.webm,.mov,.m4v,.ogg,.jpg,.jpeg,.png,.gif,.webp">
@@ -1117,6 +1129,50 @@ function rejectUser(id) {
 
 /* ── Gallery videos ───────────────────────────────── */
 var GV_GRIDS = {project: 'project-gallery-grid', learning: 'learning-gallery-grid'};
+var GV_LABELS = {
+  project: 'Project', learning: 'Learning',
+  lib_manuals: 'Enterprise Development Manuals',
+  lib_cases: 'Case Studies & Success Stories',
+  lib_research: 'Research Publications'
+};
+var GV_ITEMS = [];
+var LIB_ACTIVE = null;
+function buildGalleryMedia(v) {
+  var isImg = v.media_type === 'image';
+  var el = document.createElement(isImg ? 'img' : 'video');
+  if (isImg) { el.loading = 'lazy'; el.decoding = 'async'; el.alt = v.title || GV_LABELS[v.section] || 'Gallery image'; }
+  else { el.controls = true; el.preload = 'metadata'; }
+  el.src = '/uploads/gallery/' + encodeURIComponent(v.filename);
+  if (v.title) el.title = v.title;
+  return el;
+}
+function renderLibraryPanel() {
+  var panel = document.getElementById('lib-panel');
+  var grid = document.getElementById('lib-panel-grid');
+  document.querySelectorAll('.lms-link-btn[data-lib]').forEach(function(a) {
+    var on = a.getAttribute('data-lib') === LIB_ACTIVE;
+    a.classList.toggle('active', on);
+    a.setAttribute('aria-expanded', String(on));
+  });
+  panel.hidden = !LIB_ACTIVE;
+  if (!LIB_ACTIVE) return;
+  document.getElementById('lib-panel-title').textContent = GV_LABELS[LIB_ACTIVE];
+  grid.innerHTML = '';
+  var items = GV_ITEMS.filter(function(v) { return v.section === LIB_ACTIVE; });
+  if (!items.length) {
+    grid.innerHTML = '<p class="gallery-empty">No content has been added here yet.</p>';
+    return;
+  }
+  items.forEach(function(v) { grid.appendChild(buildGalleryMedia(v)); });
+}
+document.addEventListener('click', function(e) {
+  var link = e.target.closest && e.target.closest('.lms-link-btn[data-lib]');
+  if (!link) return;
+  e.preventDefault();
+  var lib = link.getAttribute('data-lib');
+  LIB_ACTIVE = LIB_ACTIVE === lib ? null : lib;
+  renderLibraryPanel();
+});
 function showGalleryCategory(category) {
   var training = category === 'training';
   document.getElementById('training-gallery-panel').hidden = !training;
@@ -1149,6 +1205,8 @@ function loadTrainingImages() {
 function loadGalleryVideos() {
   apiGet('/gallery/videos').then(function(videos) {
     if (!Array.isArray(videos)) return;
+    GV_ITEMS = videos;
+    renderLibraryPanel();
     Object.keys(GV_GRIDS).forEach(function(sec) {
       var grid = document.getElementById(GV_GRIDS[sec]);
       if (!grid) return;
@@ -1182,7 +1240,7 @@ function renderAdminGalleryVideos() {
     }
     wrap.innerHTML = videos.map(function(v) {
       return '<div class="gv-row">' +
-        '<span class="gv-tag">' + (v.section === 'project' ? 'Project' : 'Learning') + '</span>' +
+        '<span class="gv-tag">' + escHtml(GV_LABELS[v.section] || v.section) + '</span>' +
         '<span>' + escHtml(v.title || v.filename) + '</span>' +
         '<a href="/uploads/gallery/' + encodeURIComponent(v.filename) + '" target="_blank" rel="noopener">Preview</a>' +
         '<button class="btn-reject" onclick="deleteGalleryVideo(' + v.id + ')">&#10005; Delete</button>' +

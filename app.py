@@ -49,7 +49,9 @@ def _allowed_img(filename):
 
 GALLERY_FOLDER      = os.path.join(os.path.dirname(__file__), "uploads", "gallery")
 ALLOWED_VIDEO_EXTS  = {"mp4", "webm", "mov", "m4v", "ogg"}
-GALLERY_SECTIONS    = {"project", "learning"}
+LIBRARY_SECTIONS    = {"lib_manuals", "lib_cases", "lib_research"}
+GALLERY_SECTIONS    = {"project", "learning"} | LIBRARY_SECTIONS
+IMAGE_SECTIONS      = {"project"} | LIBRARY_SECTIONS
 
 def _allowed_video(filename):
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_VIDEO_EXTS
@@ -470,13 +472,13 @@ def admin_upload_gallery_video():
     title   = (request.form.get("title") or "").strip()[:120]
     f = request.files.get("video")
     if section not in GALLERY_SECTIONS:
-        return jsonify({"success": False, "message": "Choose Project Gallery or Learning Gallery."}), 400
+        return jsonify({"success": False, "message": "Choose a valid gallery or library section."}), 400
     if not f or not f.filename:
         return jsonify({"success": False, "message": "Please select a file."}), 400
-    # Images are accepted for the Project Gallery only.
-    if not (_allowed_video(f.filename) or (section == "project" and _allowed_img(f.filename))):
+    # The Learning Gallery accepts videos only.
+    if not (_allowed_video(f.filename) or (section in IMAGE_SECTIONS and _allowed_img(f.filename))):
         msg = ("Unsupported format. Use JPG, JPEG, PNG, GIF, WebP or a video (MP4, WebM, MOV, M4V, OGG)."
-               if section == "project" else
+               if section in IMAGE_SECTIONS else
                "Unsupported format. Use MP4, WebM, MOV, M4V or OGG.")
         return jsonify({"success": False, "message": msg}), 400
     os.makedirs(GALLERY_FOLDER, exist_ok=True)
