@@ -4,3 +4,4 @@ users.db
 *.db
 .env
 .venv/
+.DS_Store
