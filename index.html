@@ -572,7 +572,7 @@ textarea.hb-input{resize:vertical}
 <section id="gallery">
 <h2>Project Gallery</h2>
 <div class="gallery-tabs" role="group" aria-label="Project gallery categories">
-  <button class="tab-btn active" id="training-gallery-tab" type="button" aria-controls="training-gallery-panel" aria-pressed="true" onclick="showGalleryCategory('training')">Training Section</button>
+  <button class="tab-btn active" id="training-gallery-tab" type="button" aria-controls="training-gallery-panel" aria-pressed="true" onclick="showGalleryCategory('training')">Classroom</button>
   <button class="tab-btn" id="enterprise-gallery-tab" type="button" aria-controls="enterprise-gallery-panel" aria-pressed="false" onclick="showGalleryCategory('enterprise')">Enterprises &amp; Market</button>
 </div>
 <div class="gallery-panel" id="training-gallery-panel">
@@ -1204,13 +1204,13 @@ function loadTrainingImages() {
   apiGet('/gallery/training-images').then(function(images) {
     if (!Array.isArray(images)) throw new Error('Invalid training gallery response.');
     if (!images.length) {
-      grid.innerHTML = '<p class="gallery-empty">No training photos are available yet.</p>';
+      grid.innerHTML = '<p class="gallery-empty">No classroom photos are available yet.</p>';
       return;
     }
     images.forEach(function(filename) {
       var img = document.createElement('img');
       img.src = '/uploads/' + encodeURIComponent(filename);
-      img.alt = 'Training session photo';
+      img.alt = 'Classroom photo';
       img.loading = 'lazy';
       img.decoding = 'async';
       grid.appendChild(img);
