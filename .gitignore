@@ -5,3 +5,4 @@ users.db
 .env
 .venv/
 .DS_Store
+uploads/*.pdf
